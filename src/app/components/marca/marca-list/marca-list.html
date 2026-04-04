@@ -1,0 +1,128 @@
+<div class="container">
+  <!-- Cabeçalho -->
+  <div class="header">
+    <h1 class="titulo">📋 Gerenciamento de Marcas</h1>
+    <p class="subtitulo">Cadastre e gerencie as marcas dos seus produtos</p>
+  </div>
+
+  <!-- Barra de ações -->
+  <div class="acoes">
+    <div class="busca-container">
+      <span class="busca-icon">🔍</span>
+      <input 
+        type="text" 
+        placeholder="Buscar marca..." 
+        [(ngModel)]="filtro"
+        (input)="filtrarMarcas()"
+        class="input-busca"
+      />
+      <button *ngIf="filtro" class="limpar-busca" (click)="limparFiltro()">✕</button>
+    </div>
+
+    <button class="btn btn-primary" (click)="novoItem()">
+      <span class="btn-icon">+</span>
+      Nova Marca
+    </button>
+  </div>
+
+  <!-- Estatísticas -->
+  <div class="estatisticas">
+    <div class="stat-card">
+      <span class="stat-label">Total de Marcas</span>
+      <span class="stat-value">{{ itens.length }}</span>
+    </div>
+    <div class="stat-card" *ngIf="filtro">
+      <span class="stat-label">Resultados encontrados</span>
+      <span class="stat-value">{{ itensFiltrados.length || itens.length }}</span>
+    </div>
+  </div>
+
+  <!-- Tabela -->
+  <div class="tabela-container">
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th class="col-id">ID</th>
+          <th class="col-nome">Nome da Marca</th>
+          <th class="col-acoes">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of (itensFiltrados || itens)">
+          <td class="col-id">
+            <span class="id-badge">#{{ item.id }}</span>
+          </td>
+          <td class="col-nome">
+            <div class="marca-info">
+              <div class="marca-avatar">{{ item.nome.charAt(0).toUpperCase() }}</div>
+              <span class="marca-nome">{{ item.nome }}</span>
+            </div>
+          </td>
+          <td class="col-acoes">
+            <div class="acoes-botoes">
+              <button class="btn btn-editar" (click)="editar(item)" title="Editar">
+                ✏️ Editar
+              </button>
+              <button class="btn btn-excluir" (click)="excluir(item.id)" title="Excluir">
+                🗑️ Excluir
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando marcas...</p>
+  </div>
+
+  <!-- Mensagem caso vazio -->
+  <div *ngIf="!loading && (itensFiltrados.length === 0 || itens.length === 0)" class="vazio">
+    <div class="vazio-icon">📦</div>
+    <h3>Nenhuma marca encontrada</h3>
+    <p *ngIf="filtro">Não encontramos marcas com "{{ filtro }}"</p>
+    <p *ngIf="!filtro">Clique em "Nova Marca" para começar</p>
+  </div>
+</div>
+
+<!-- Modal para criar/editar -->
+<div class="modal" *ngIf="mostrarModal" (click)="fecharModal($event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ modalTitulo }}</h2>
+      <button class="modal-fechar" (click)="fecharModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="nomeMarca">Nome da Marca *</label>
+        <input 
+          type="text" 
+          id="nomeMarca" 
+          [(ngModel)]="marcaEdit.nome"
+          placeholder="Ex: Nike, Adidas, Coca-Cola..."
+          class="form-input"
+          autofocus
+        />
+      </div>
+      <div class="form-group">
+        <label>ID da Marca</label>
+        <input 
+          type="text" 
+          [value]="marcaEdit.id || 'Novo'" 
+          class="form-input" 
+          disabled
+        />
+        <small class="form-help">O ID é gerado automaticamente</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" (click)="salvarMarca()" [disabled]="!marcaEdit.nome">
+        {{ editando ? 'Atualizar' : 'Criar' }} Marca
+      </button>
+    </div>
+  </div>
+</div>
