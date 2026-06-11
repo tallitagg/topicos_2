@@ -1,0 +1,66 @@
+<div class="page-content">
+  <div class="header-row">
+    <div class="title-area">
+      <span class="subtitle">CADASTRO</span>
+      <h1>{{ form.value.id ? 'Editar Modelo' : 'Cadastrar Novo Modelo' }}</h1>
+      <p>Preencha as informações abaixo:</p>
+    </div>
+  </div>
+
+  <mat-card class="card">
+    <mat-card-content>
+      <form class="form" [formGroup]="form">
+        <div class="grid">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nome*</mat-label>
+            <input matInput formControlName="nome" placeholder="Digite o nome do modelo" />
+            <mat-error *ngIf="form.get('nome')?.hasError('required') && form.get('nome')?.touched">
+              O nome é obrigatório.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Ano de Lançamento*</mat-label>
+            <input matInput type="number" formControlName="anoLancamento" placeholder="Ex.: 2025" />
+            <mat-error *ngIf="form.get('anoLancamento')?.hasError('required') && form.get('anoLancamento')?.touched">
+              O ano é obrigatório.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Marca*</mat-label>
+            <mat-select formControlName="marcaId">
+              <mat-option *ngFor="let marca of marcas" [value]="marca.id">
+                {{ marca.nome }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('marcaId')?.hasError('required') && form.get('marcaId')?.touched">
+              A marca é obrigatória.
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div class="actions">
+          <button
+            mat-raised-button
+            type="button"
+            class="cancel-button"
+            routerLink="/modelos">
+            Cancelar
+          </button>
+
+          <button
+            mat-raised-button
+            type="button"
+            class="save-button"
+            (click)="salvar()"
+            [disabled]="form.invalid">
+            Salvar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

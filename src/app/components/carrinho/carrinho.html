@@ -1,0 +1,248 @@
+<div class="cart-page">
+
+  <header class="site-header">
+    <div class="logo-area">
+      <div class="logo-mark">E</div>
+      <span>E-Garrafas</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/catalogo">Início</a>
+      <a routerLink="/catalogo">Catálogo</a>
+      <a routerLink="/catalogo">Ofertas</a>
+      <a routerLink="/catalogo">Sobre</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="icon-button" routerLink="/desejos" aria-label="Lista de desejos">
+        <mat-icon>favorite_border</mat-icon>
+        <span *ngIf="quantidadeDesejos() > 0">{{ quantidadeDesejos() }}</span>
+      </a>
+
+      <a class="icon-button active" routerLink="/carrinho" aria-label="Carrinho">
+        <mat-icon>shopping_cart</mat-icon>
+        <span *ngIf="quantidadeCarrinho() > 0">{{ quantidadeCarrinho() }}</span>
+      </a>
+
+      <a class="icon-button" routerLink="/perfil" aria-label="Perfil">
+        <mat-icon>person_outline</mat-icon>
+      </a>
+    </div>
+  </header>
+
+  <main class="cart-container">
+
+    <section class="cart-title">
+      <h1>Meu Carrinho</h1>
+      <p *ngIf="itens.length > 0">
+        Você tem {{ quantidadeCarrinho() }} item(ns) selecionado(s) para uma hidratação premium.
+      </p>
+
+      <p *ngIf="itens.length === 0">
+        Seu carrinho está vazio. Explore o catálogo e escolha seus produtos favoritos.
+      </p>
+    </section>
+
+    <section class="cart-layout">
+
+      <div class="cart-items">
+
+        <div class="empty-cart" *ngIf="itens.length === 0">
+          <div class="empty-icon">
+            <mat-icon>shopping_cart</mat-icon>
+          </div>
+
+          <h2>Nenhum produto no carrinho</h2>
+          <p>Adicione produtos ao carrinho para continuar sua compra.</p>
+
+          <a routerLink="/catalogo" class="primary-button">
+            Ver Catálogo
+          </a>
+        </div>
+
+        <article class="cart-item" *ngFor="let item of itens">
+
+          <div class="item-image">
+            <img
+              *ngIf="getImagemProduto(item.produto); else semImagem"
+              [src]="getImagemProduto(item.produto)"
+              [alt]="item.produto.nome">
+
+            <ng-template #semImagem>
+              <div class="image-placeholder">
+                <mat-icon>local_drink</mat-icon>
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="item-info">
+            <span class="item-tag">
+              {{ item.produto.marca?.nome || 'Linha Premium' }}
+            </span>
+
+            <h2>{{ item.produto.nome }}</h2>
+
+            <p>
+              {{ item.produto.capacidade || '0.50' }}L
+              <span *ngIf="item.produto.material?.tipo">
+                • {{ item.produto.material?.tipo }}
+              </span>
+            </p>
+
+            <button
+              type="button"
+              class="remove-button"
+              (click)="remover(item.produto.id)">
+              <mat-icon>delete</mat-icon>
+              Remover
+            </button>
+          </div>
+
+          <div class="item-actions">
+            <span class="unit-price">
+              {{ formatarPreco(item.produto.preco) }}
+            </span>
+
+            <div class="quantity-control">
+              <button type="button" (click)="diminuir(item.produto.id)">
+                <mat-icon>remove</mat-icon>
+              </button>
+
+              <strong>{{ item.quantidade }}</strong>
+
+              <button type="button" (click)="aumentar(item.produto.id)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+
+            <strong class="item-subtotal">
+              {{ formatarPreco(subtotalItem(item)) }}
+            </strong>
+          </div>
+
+        </article>
+
+      </div>
+
+      <aside class="order-summary">
+        <h2>Resumo do Pedido</h2>
+
+        <div class="summary-line">
+          <span>Subtotal</span>
+          <strong>{{ formatarPreco(subtotal()) }}</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Frete</span>
+          <strong class="free">Grátis</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Descontos</span>
+          <strong>- {{ formatarPreco(desconto()) }}</strong>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <strong>{{ formatarPreco(total()) }}</strong>
+        </div>
+
+        <div class="coupon-box">
+          <input placeholder="Cupom de desconto">
+          <button type="button">Ok</button>
+        </div>
+
+        <button
+          type="button"
+          class="checkout-button"
+          (click)="finalizarCompra()">
+          Finalizar Compra
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+
+        <button
+          type="button"
+          class="outline-button"
+          (click)="continuarComprando()">
+          Continuar Comprando
+        </button>
+
+        <div class="security-icons">
+          <mat-icon>credit_card</mat-icon>
+          <mat-icon>payments</mat-icon>
+          <mat-icon>shield</mat-icon>
+        </div>
+      </aside>
+
+    </section>
+
+    <section class="recommendations" *ngIf="recomendados.length > 0">
+      <h2>Também pode te interessar</h2>
+
+      <div class="recommendations-grid">
+
+        <article class="recommendation-card" *ngFor="let produto of recomendados">
+
+          <div class="recommendation-image">
+            <img
+              *ngIf="getImagemProduto(produto); else semImagemRecomendada"
+              [src]="getImagemProduto(produto)"
+              [alt]="produto.nome">
+
+            <ng-template #semImagemRecomendada>
+              <div class="recommendation-placeholder">
+                <mat-icon>local_drink</mat-icon>
+              </div>
+            </ng-template>
+          </div>
+
+          <h3>{{ produto.nome }}</h3>
+          <p>{{ formatarPreco(produto.preco) }}</p>
+
+          <button
+            type="button"
+            (click)="adicionarRecomendado(produto)">
+            <mat-icon>add_shopping_cart</mat-icon>
+            Adicionar
+          </button>
+
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <h2>E-Garrafas</h2>
+      <p>Soluções térmicas premium para seu estilo de vida moderno.</p>
+    </div>
+
+    <div>
+      <h4>Produtos</h4>
+      <a>Térmicas</a>
+      <a>Esportivas</a>
+      <a>Acessórios</a>
+    </div>
+
+    <div>
+      <h4>Suporte</h4>
+      <a>Envio</a>
+      <a>Privacidade</a>
+      <a>Termos de Uso</a>
+    </div>
+
+    <div>
+      <h4>Contato</h4>
+      <a>ajuda&#64;egarrafas.com.br</a>
+      <div class="social-icons">
+        <mat-icon>share</mat-icon>
+        <mat-icon>public</mat-icon>
+      </div>
+    </div>
+  </footer>
+
+</div>

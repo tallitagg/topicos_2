@@ -1,0 +1,157 @@
+<div class="cadastro-page">
+
+  <section class="brand-side">
+    <div class="brand-content">
+      <h1>E-Garrafas</h1>
+
+      <div class="product-card">
+        <div class="bottle-icon">
+          <mat-icon>local_drink</mat-icon>
+        </div>
+
+        <h2>Crie sua conta</h2>
+        <p>Cadastre-se para acessar o catálogo, lista de desejos e carrinho.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-side">
+    <mat-card class="cadastro-card">
+
+      <div class="title-area">
+        <span class="subtitle">CADASTRO</span>
+        <h1>Cadastre-se</h1>
+        <p>Preencha as informações abaixo.</p>
+      </div>
+
+      <form class="form" [formGroup]="form">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nome completo</mat-label>
+          <input matInput formControlName="nome" placeholder="Digite seu nome">
+
+          <mat-error *ngIf="form.get('nome')?.hasError('required') && form.get('nome')?.touched">
+            O nome é obrigatório.
+          </mat-error>
+
+          <mat-error *ngIf="form.get('nome')?.hasError('minlength') && form.get('nome')?.touched">
+            O nome deve ter pelo menos 3 caracteres.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>CPF</mat-label>
+          <input matInput formControlName="cpf" placeholder="Digite seu CPF">
+
+          <mat-error *ngIf="form.get('cpf')?.hasError('required') && form.get('cpf')?.touched">
+            O CPF é obrigatório.
+          </mat-error>
+
+          <mat-error *ngIf="form.get('cpf')?.hasError('minlength') && form.get('cpf')?.touched">
+            O CPF deve ter pelo menos 11 números.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Usuário</mat-label>
+          <input matInput formControlName="username" placeholder="Ex.: maria.santos">
+
+          <mat-error *ngIf="form.get('username')?.hasError('required') && form.get('username')?.touched">
+            O usuário é obrigatório.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>E-mail</mat-label>
+          <input matInput formControlName="email" placeholder="seuemail@email.com">
+
+          <mat-error *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched">
+            O e-mail é obrigatório.
+          </mat-error>
+
+          <mat-error *ngIf="form.get('email')?.hasError('email') && form.get('email')?.touched">
+            Informe um e-mail válido.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Telefone</mat-label>
+          <input matInput formControlName="telefone" placeholder="(63) 99999-9999">
+
+          <mat-error *ngIf="form.get('telefone')?.hasError('required') && form.get('telefone')?.touched">
+            O telefone é obrigatório.
+          </mat-error>
+
+          <mat-error *ngIf="form.get('telefone')?.hasError('minlength') && form.get('telefone')?.touched">
+            Informe um telefone válido.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Senha</mat-label>
+          <input
+            matInput
+            [type]="ocultarSenha ? 'password' : 'text'"
+            formControlName="senha">
+
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            class="eye-button"
+            (click)="ocultarSenha = !ocultarSenha">
+            <mat-icon>{{ ocultarSenha ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+
+          <mat-error *ngIf="form.get('senha')?.hasError('required') && form.get('senha')?.touched">
+            A senha é obrigatória.
+          </mat-error>
+
+          <mat-error *ngIf="form.get('senha')?.hasError('minlength') && form.get('senha')?.touched">
+            A senha deve ter pelo menos 3 caracteres.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Confirmar senha</mat-label>
+          <input
+            matInput
+            [type]="ocultarConfirmacao ? 'password' : 'text'"
+            formControlName="confirmarSenha">
+
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            class="eye-button"
+            (click)="ocultarConfirmacao = !ocultarConfirmacao">
+            <mat-icon>{{ ocultarConfirmacao ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+
+          <mat-error *ngIf="form.get('confirmarSenha')?.hasError('required') && form.get('confirmarSenha')?.touched">
+            Confirme sua senha.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-error" *ngIf="form.hasError('senhasDiferentes') && form.get('confirmarSenha')?.touched">
+          As senhas não coincidem.
+        </div>
+
+        <button
+          mat-raised-button
+          type="button"
+          class="cadastro-button"
+          (click)="cadastrar()">
+          Cadastrar
+        </button>
+
+        <div class="links">
+          <span>Já possui conta?</span>
+          <a routerLink="/login">Entrar</a>
+        </div>
+
+      </form>
+    </mat-card>
+  </section>
+
+</div>

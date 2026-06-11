@@ -1,4 +1,6 @@
-export interface Marca {
-    id?: number;
-    nome: string;
+import { Modelo } from "./modelo";
+
+export class Marca {
+  id!: number;
+  nome!: string;
 }

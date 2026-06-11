@@ -1,0 +1,61 @@
+<div class="recuperar-page">
+
+  <section class="brand-side">
+    <div class="brand-content">
+      <h1>E-Garrafas</h1>
+
+      <div class="product-card">
+        <div class="bottle-icon">
+          <mat-icon>lock_reset</mat-icon>
+        </div>
+
+        <h2>Recupere seu acesso</h2>
+        <p>Informe seu e-mail para receber as instruções de recuperação.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-side">
+    <mat-card class="recuperar-card">
+
+      <div class="title-area">
+        <span class="subtitle">RECUPERAÇÃO</span>
+        <h1>Esqueci minha senha</h1>
+        <p>Digite o e-mail vinculado à sua conta.</p>
+      </div>
+
+      <form class="form" [formGroup]="form">
+
+        <mat-form-field appearance="outline">
+          <mat-label>E-mail</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            placeholder="seuemail@email.com">
+
+          <mat-error *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched">
+            O e-mail é obrigatório.
+          </mat-error>
+
+          <mat-error *ngIf="form.get('email')?.hasError('email') && form.get('email')?.touched">
+            Informe um e-mail válido.
+          </mat-error>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          type="button"
+          class="recuperar-button"
+          (click)="enviar()">
+          Enviar instruções
+        </button>
+
+        <div class="links">
+          <a routerLink="/login">Voltar para login</a>
+        </div>
+
+      </form>
+    </mat-card>
+  </section>
+
+</div>

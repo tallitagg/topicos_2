@@ -1,0 +1,107 @@
+<div class="summary-page" *ngIf="pedido">
+
+  <main class="summary-container">
+
+    <section class="success-card">
+      <div class="success-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+
+      <span class="page-label">PEDIDO CONFIRMADO</span>
+      <h1>Compra realizada com sucesso!</h1>
+
+      <p>
+        Obrigada por comprar na E-Garrafas. Seu pedido foi registrado e já aparece em suas compras.
+      </p>
+
+      <div class="order-info">
+        <div>
+          <span>Número do pedido</span>
+          <strong>#{{ pedido.id }}</strong>
+        </div>
+
+        <div>
+          <span>Data</span>
+          <strong>{{ formatarData(pedido.data) }}</strong>
+        </div>
+
+        <div>
+          <span>Pagamento</span>
+          <strong>{{ nomePagamento() }}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>{{ pedido.statusPagamento }}</strong>
+        </div>
+      </div>
+
+      <div class="payment-box" *ngIf="pedido.pagamento.forma === 'PIX'">
+        <h2>Pagamento via PIX</h2>
+        <p>Use o código abaixo para concluir o pagamento.</p>
+        <textarea readonly>{{ pedido.pagamento.codigoPix }}</textarea>
+      </div>
+
+      <div class="payment-box" *ngIf="pedido.pagamento.forma === 'BOLETO'">
+        <h2>Pagamento via Boleto</h2>
+        <p>Vencimento: {{ pedido.pagamento.vencimentoBoleto }}</p>
+        <textarea readonly>{{ pedido.pagamento.linhaBoleto }}</textarea>
+      </div>
+
+      <div class="payment-box" *ngIf="pedido.pagamento.forma === 'CARTAO_CREDITO'">
+        <h2>Pagamento aprovado</h2>
+        <p>
+          Compra aprovada no cartão com final
+          {{ pedido.pagamento.finalCartao }} em {{ pedido.pagamento.parcelas }}x.
+        </p>
+      </div>
+
+      <div class="address-box">
+        <h2>Endereço de entrega</h2>
+        <p>
+          {{ pedido.endereco.rua }}, {{ pedido.endereco.numero }}
+          <span *ngIf="pedido.endereco.complemento">
+            - {{ pedido.endereco.complemento }}
+          </span>
+        </p>
+        <p>
+          {{ pedido.endereco.bairro }} - {{ pedido.endereco.cidade }}/{{ pedido.endereco.estado }}
+        </p>
+        <p>CEP: {{ pedido.endereco.cep }}</p>
+      </div>
+
+      <div class="items-box">
+        <h2>Itens do pedido</h2>
+
+        <article class="item" *ngFor="let item of pedido.itens">
+          <div>
+            <strong>{{ item.produto.nome }}</strong>
+            <span>Quantidade: {{ item.quantidade }}</span>
+          </div>
+
+          <p>{{ formatarPreco(item.produto.preco * item.quantidade) }}</p>
+        </article>
+      </div>
+
+      <div class="total-box">
+        <span>Total do pedido</span>
+        <strong>{{ formatarPreco(pedido.total) }}</strong>
+      </div>
+
+      <div class="actions">
+        <a routerLink="/catalogo" class="primary-button">
+          Voltar ao catálogo
+        </a>
+
+        <a
+          routerLink="/perfil"
+          [queryParams]="{ secao: 'compras' }"
+          class="secondary-button">
+          Ver minhas compras
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+</div>

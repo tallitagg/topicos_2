@@ -1,0 +1,64 @@
+<div class="page-content">
+  <div class="header-row">
+    <div class="title-area">
+      <span class="subtitle">CADASTRO</span>
+      <h1>{{ form.value.id ? 'Editar Cor' : 'Cadastrar Nova Cor' }}</h1>
+      <p>Preencha as informações abaixo:</p>
+    </div>
+  </div>
+
+  <mat-card class="card">
+    <mat-card-content>
+      <form class="form" [formGroup]="form">
+        <div class="grid">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nome*</mat-label>
+            <input matInput formControlName="nome" placeholder="Digite o nome da cor" />
+            <mat-error *ngIf="form.get('nome')?.hasError('required') && form.get('nome')?.touched">
+              O nome é obrigatório.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Código Hex*</mat-label>
+            <input matInput formControlName="codigoHex" placeholder="#FFFFFF" />
+            <mat-error *ngIf="form.get('codigoHex')?.invalid && form.get('codigoHex')?.touched">
+              Informe um código hexadecimal válido.
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div class="actions">
+          <button
+            mat-raised-button
+            type="button"
+            class="cancel-button"
+            routerLink="/cores">
+            Cancelar
+          </button>
+
+          <button
+            *ngIf="form.value.id"
+            mat-raised-button
+            type="button"
+            color="warn"
+            class="delete-button"
+            (click)="excluir()">
+            Excluir
+          </button>
+
+          <button
+            mat-raised-button
+            type="button"
+            class="save-button"
+            (click)="salvar()"
+            [disabled]="form.invalid">
+            Salvar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

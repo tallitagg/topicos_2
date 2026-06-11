@@ -1,0 +1,92 @@
+<div class="page-content">
+
+  <div class="header-row">
+    <div class="title-area">
+      <span class="subtitle">LISTAGEM</span>
+      <h1>Controle de Materiais</h1>
+    </div>
+
+    <div class="add-button-wrapper">
+      <button
+        mat-fab
+        class="add-button"
+        type="button"
+        routerLink="/materiais/new">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="search-wrapper">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Pesquisar</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Pesquisar material">
+    </mat-form-field>
+  </div>
+
+  <div class="table-card">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z0">
+
+      <ng-container matColumnDef="numero">
+        <th mat-header-cell *matHeaderCellDef>Número</th>
+        <td mat-cell *matCellDef="let obj; let i = index">
+          {{ i + 1 }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let obj">
+          {{ obj.tipo }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="resistenciaTemperatura">
+        <th mat-header-cell *matHeaderCellDef>Resistência</th>
+        <td mat-cell *matCellDef="let obj">
+          {{ obj.resistenciaTemperatura }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acao">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let obj">
+          <div class="action-buttons">
+            <a
+              mat-icon-button
+              color="primary"
+              [routerLink]="['/materiais/edit', obj.id]">
+              <mat-icon>edit</mat-icon>
+            </a>
+
+            <button
+              mat-icon-button
+              type="button"
+              color="warn"
+              (click)="excluir(obj.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="empty-row" colspan="4">
+          Nenhum material encontrado.
+        </td>
+      </tr>
+    </table>
+
+    <div class="paginator-container">
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20]"
+        [pageSize]="5"
+        showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </div>
+
+</div>

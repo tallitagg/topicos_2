@@ -1,0 +1,614 @@
+<div class="profile-page">
+
+  <header class="site-header">
+    <button type="button" class="logo-area" (click)="irParaCatalogo()">
+      <div class="logo-mark">E</div>
+      <span>E-Garrafas</span>
+    </button>
+
+    <nav class="nav-links">
+      <a routerLink="/catalogo">Catálogo</a>
+      <a routerLink="/desejos">Favoritos</a>
+      <a routerLink="/carrinho">Carrinho</a>
+      <a routerLink="/perfil" class="active">Perfil</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="icon-button" routerLink="/desejos" aria-label="Lista de desejos">
+        <mat-icon>favorite_border</mat-icon>
+        <span *ngIf="quantidadeDesejos() > 0">{{ quantidadeDesejos() }}</span>
+      </a>
+
+      <a class="icon-button" routerLink="/carrinho" aria-label="Carrinho">
+        <mat-icon>shopping_cart</mat-icon>
+        <span *ngIf="quantidadeCarrinho() > 0">{{ quantidadeCarrinho() }}</span>
+      </a>
+
+      <button
+        type="button"
+        class="logout-button"
+        *ngIf="estaLogado()"
+        (click)="sairDaConta()">
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <main class="profile-container">
+
+    <section class="profile-hero">
+      <div>
+        <span>ÁREA DO CLIENTE</span>
+        <h1>Meu Perfil</h1>
+        <p>Gerencie sua conta, pedidos, endereços e formas de pagamento.</p>
+      </div>
+
+      <button type="button" (click)="irParaCatalogo()">
+        Continuar comprando
+      </button>
+    </section>
+
+    <section class="login-alert" *ngIf="!estaLogado()">
+      <mat-icon>info</mat-icon>
+
+      <div>
+        <h3>Você não está logado</h3>
+        <p>Para alterar dados da conta ou senha, faça login novamente.</p>
+      </div>
+
+      <button type="button" (click)="irParaLogin()">
+        Fazer login
+      </button>
+    </section>
+
+    <section class="profile-layout">
+
+      <aside class="profile-sidebar">
+        <div class="user-card">
+          <div class="avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+
+          <h2>{{ perfilForm.value.nome }}</h2>
+          <p>{{ perfilForm.value.email }}</p>
+        </div>
+
+        <nav class="profile-tabs">
+          <button
+            type="button"
+            [class.active]="abaAtiva === 'conta'"
+            (click)="abrirAba('conta')">
+            <mat-icon>manage_accounts</mat-icon>
+            Conta
+          </button>
+
+          <button
+            type="button"
+            [class.active]="abaAtiva === 'pedidos'"
+            (click)="abrirAba('pedidos')">
+            <mat-icon>shopping_bag</mat-icon>
+            Meus pedidos
+          </button>
+
+          <button
+            type="button"
+            [class.active]="abaAtiva === 'enderecos'"
+            (click)="abrirAba('enderecos')">
+            <mat-icon>location_on</mat-icon>
+            Meus endereços
+          </button>
+
+          <button
+            type="button"
+            [class.active]="abaAtiva === 'pagamentos'"
+            (click)="abrirAba('pagamentos')">
+            <mat-icon>credit_card</mat-icon>
+            Meus pagamentos
+          </button>
+        </nav>
+
+        <div class="sidebar-summary">
+          <div>
+            <span>Pedidos</span>
+            <strong>{{ compras.length }}</strong>
+          </div>
+
+          <div>
+            <span>Total comprado</span>
+            <strong>{{ formatarPreco(totalCompras()) }}</strong>
+          </div>
+        </div>
+      </aside>
+
+      <section class="profile-content">
+
+        <article class="content-card" *ngIf="abaAtiva === 'conta'">
+          <div class="card-title">
+            <mat-icon>manage_accounts</mat-icon>
+
+            <div>
+              <h2>Conta</h2>
+              <p>Atualize seus dados pessoais e altere sua senha com segurança.</p>
+            </div>
+          </div>
+
+          <div class="account-grid">
+
+            <section>
+              <h3>Dados pessoais</h3>
+
+              <form class="form-grid" [formGroup]="perfilForm">
+                <div class="field full">
+                  <label>Nome completo</label>
+                  <input formControlName="nome" placeholder="Nome completo">
+                  <small *ngIf="campoInvalido(perfilForm, 'nome')">
+                    Informe seu nome.
+                  </small>
+                </div>
+
+                <div class="field">
+                  <label>Usuário</label>
+                  <input formControlName="username" placeholder="usuario">
+                  <small *ngIf="campoInvalido(perfilForm, 'username')">
+                    Informe seu usuário.
+                  </small>
+                </div>
+
+                <div class="field">
+                  <label>CPF</label>
+                  <input formControlName="cpf" placeholder="000.000.000-00">
+                  <small *ngIf="campoInvalido(perfilForm, 'cpf')">
+                    Informe seu CPF.
+                  </small>
+                </div>
+
+                <div class="field">
+                  <label>E-mail</label>
+                  <input formControlName="email" placeholder="email@exemplo.com">
+                  <small *ngIf="campoInvalido(perfilForm, 'email')">
+                    Informe um e-mail válido.
+                  </small>
+                </div>
+
+                <div class="field">
+                  <label>Telefone</label>
+                  <input formControlName="telefone" placeholder="(63) 99999-9999">
+                  <small *ngIf="campoInvalido(perfilForm, 'telefone')">
+                    Informe seu telefone.
+                  </small>
+                </div>
+
+                <div class="field full confirmation-field">
+                  <label>Senha atual para confirmar alterações</label>
+                  <input
+                    type="password"
+                    formControlName="senhaConfirmacaoPerfil"
+                    placeholder="Digite sua senha atual">
+
+                  <small *ngIf="campoInvalido(perfilForm, 'senhaConfirmacaoPerfil')">
+                    A senha é obrigatória para salvar alterações.
+                  </small>
+                </div>
+              </form>
+
+              <div class="actions">
+                <button
+                  type="button"
+                  class="primary-button"
+                  [disabled]="salvandoPerfil"
+                  (click)="salvarPerfil()">
+                  {{ salvandoPerfil ? 'Salvando...' : 'Salvar dados da conta' }}
+                </button>
+              </div>
+            </section>
+
+            <section class="password-section">
+              <h3>Alterar senha</h3>
+
+              <form class="form-grid" [formGroup]="senhaForm">
+                <div class="field full">
+                  <label>Senha atual</label>
+                  <input
+                    type="password"
+                    formControlName="senhaAtual"
+                    placeholder="Digite sua senha atual">
+
+                  <small *ngIf="mostrarErroSenhaAtual()">
+                    Informe sua senha atual com pelo menos 3 caracteres.
+                  </small>
+                </div>
+
+                <div class="field">
+                  <label>Nova senha</label>
+                  <input
+                    type="password"
+                    formControlName="novaSenha"
+                    placeholder="Nova senha">
+
+                  <small *ngIf="mostrarErroNovaSenha()">
+                    A nova senha deve ter pelo menos 3 caracteres.
+                  </small>
+
+                  <small *ngIf="mostrarErroNovaSenhaIgualAtual()">
+                    A nova senha precisa ser diferente da senha atual.
+                  </small>
+                </div>
+
+                <div class="field">
+                  <label>Confirmar nova senha</label>
+                  <input
+                    type="password"
+                    formControlName="confirmarSenha"
+                    placeholder="Confirme a nova senha">
+
+                  <small *ngIf="mostrarErroConfirmarSenha()">
+                    Confirme a nova senha.
+                  </small>
+
+                  <small *ngIf="mostrarErroSenhasDiferentes()">
+                    A confirmação precisa ser igual à nova senha.
+                  </small>
+                </div>
+              </form>
+
+              <div class="password-rules">
+                <span [class.ok]="senhaForm.get('senhaAtual')?.valid">
+                  Senha atual preenchida
+                </span>
+
+                <span [class.ok]="senhaForm.get('novaSenha')?.valid">
+                  Nova senha com mínimo de 3 caracteres
+                </span>
+
+                <span [class.ok]="!senhaForm.hasError('novaSenhaIgualAtual') && senhaForm.get('novaSenha')?.value">
+                  Nova senha diferente da atual
+                </span>
+
+                <span [class.ok]="!senhaForm.hasError('senhasDiferentes') && senhaForm.get('confirmarSenha')?.value">
+                  Confirmação compatível
+                </span>
+              </div>
+
+              <div class="actions">
+                <button
+                  type="button"
+                  class="secondary-danger-button"
+                  [class.disabled-button]="!podeAlterarSenha()"
+                  (click)="alterarSenha()">
+                  {{ alterandoSenha ? 'Alterando...' : 'Alterar senha' }}
+                </button>
+              </div>
+            </section>
+
+          </div>
+        </article>
+
+        <article class="content-card" *ngIf="abaAtiva === 'pedidos'">
+          <div class="card-title">
+            <mat-icon>shopping_bag</mat-icon>
+
+            <div>
+              <h2>Meus pedidos</h2>
+              <p>Veja o detalhamento dos pedidos realizados e compre novamente.</p>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="compras.length === 0">
+            <mat-icon>shopping_bag</mat-icon>
+            <h3>Nenhum pedido encontrado</h3>
+            <p>Quando você finalizar uma compra, ela aparecerá aqui.</p>
+
+            <button type="button" class="primary-button" (click)="irParaCatalogo()">
+              Ver catálogo
+            </button>
+          </div>
+
+          <div class="orders-list" *ngIf="compras.length > 0">
+            <article class="order-card" *ngFor="let pedido of comprasOrdenadas()">
+              <div class="order-header">
+                <div>
+                  <span>Pedido #{{ pedido.id }}</span>
+                  <h3>{{ formatarPreco(pedido.total) }}</h3>
+                  <p>{{ formatarData(pedido.data) }}</p>
+                </div>
+
+                <div class="order-status">
+                  <strong [class]="statusClasse(pedido.statusPagamento)">
+                    {{ pedido.statusPagamento || 'Confirmado' }}
+                  </strong>
+
+                  <button type="button" (click)="alternarDetalhesPedido(pedido.id)">
+                    {{ pedidoAbertoId === pedido.id ? 'Ocultar' : 'Detalhes' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="order-summary">
+                <span>{{ quantidadeItensPedido(pedido) }} item(ns)</span>
+                <span>{{ nomePagamento(pedido.pagamento.forma) }}</span>
+                <span>{{ pedido.endereco.cidade }}/{{ pedido.endereco.estado }}</span>
+              </div>
+
+              <div class="order-details" *ngIf="pedidoAbertoId === pedido.id">
+                <h4>Itens do pedido</h4>
+
+                <div class="order-item" *ngFor="let item of pedido.itens">
+                  <div>
+                    <strong>{{ item.produto.nome }}</strong>
+                    <span>Quantidade: {{ item.quantidade }}</span>
+                  </div>
+
+                  <p>{{ formatarPreco(item.produto.preco * item.quantidade) }}</p>
+                </div>
+
+                <div class="order-address">
+                  <h4>Entrega</h4>
+
+                  <p>
+                    {{ pedido.endereco.rua }}, {{ pedido.endereco.numero }}
+                    <span *ngIf="pedido.endereco.complemento">
+                      - {{ pedido.endereco.complemento }}
+                    </span>
+                  </p>
+
+                  <p>
+                    {{ pedido.endereco.bairro }} - {{ pedido.endereco.cidade }}/{{ pedido.endereco.estado }}
+                  </p>
+
+                  <p>CEP: {{ pedido.endereco.cep }}</p>
+                </div>
+
+                <div class="order-footer">
+                  <button type="button" class="primary-button" (click)="comprarNovamente(pedido)">
+                    Comprar novamente
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </article>
+
+        <article class="content-card" *ngIf="abaAtiva === 'enderecos'">
+          <div class="card-title">
+            <mat-icon>location_on</mat-icon>
+
+            <div>
+              <h2>Meus endereços</h2>
+              <p>Cadastre mais de um endereço e escolha o principal.</p>
+            </div>
+          </div>
+
+          <form class="form-grid" [formGroup]="enderecoForm">
+            <div class="field">
+              <label>Tipo</label>
+              <select formControlName="tipo">
+                <option value="Casa">Casa</option>
+                <option value="Trabalho">Trabalho</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+
+            <label class="checkbox-field">
+              <input type="checkbox" formControlName="principal">
+              Definir como endereço principal
+            </label>
+
+            <div class="field full">
+              <label>Nome do destinatário</label>
+              <input formControlName="nome" placeholder="Nome do destinatário">
+              <small *ngIf="campoInvalido(enderecoForm, 'nome')">
+                Informe o nome do destinatário.
+              </small>
+            </div>
+
+            <div class="field">
+              <label>Telefone</label>
+              <input formControlName="telefone" placeholder="(63) 99999-9999">
+              <small *ngIf="campoInvalido(enderecoForm, 'telefone')">
+                Informe o telefone.
+              </small>
+            </div>
+
+            <div class="field">
+              <label>CEP</label>
+              <input formControlName="cep" placeholder="77000-000">
+              <small *ngIf="campoInvalido(enderecoForm, 'cep')">
+                Informe o CEP.
+              </small>
+            </div>
+
+            <div class="field full">
+              <label>Rua / Avenida</label>
+              <input formControlName="rua" placeholder="Rua ou avenida">
+              <small *ngIf="campoInvalido(enderecoForm, 'rua')">
+                Informe a rua ou avenida.
+              </small>
+            </div>
+
+            <div class="field">
+              <label>Número</label>
+              <input formControlName="numero" placeholder="Número">
+              <small *ngIf="campoInvalido(enderecoForm, 'numero')">
+                Informe o número.
+              </small>
+            </div>
+
+            <div class="field">
+              <label>Complemento</label>
+              <input formControlName="complemento" placeholder="Complemento">
+            </div>
+
+            <div class="field">
+              <label>Bairro</label>
+              <input formControlName="bairro" placeholder="Bairro">
+              <small *ngIf="campoInvalido(enderecoForm, 'bairro')">
+                Informe o bairro.
+              </small>
+            </div>
+
+            <div class="field">
+              <label>Cidade</label>
+              <input formControlName="cidade" placeholder="Cidade">
+              <small *ngIf="campoInvalido(enderecoForm, 'cidade')">
+                Informe a cidade.
+              </small>
+            </div>
+
+            <div class="field">
+              <label>Estado</label>
+              <input formControlName="estado" placeholder="TO" maxlength="2">
+              <small *ngIf="campoInvalido(enderecoForm, 'estado')">
+                Informe o estado.
+              </small>
+            </div>
+          </form>
+
+          <div class="actions">
+            <button type="button" class="primary-button" (click)="adicionarEndereco()">
+              Adicionar endereço
+            </button>
+          </div>
+
+          <div class="address-list" *ngIf="enderecos.length > 0">
+            <article class="address-card" *ngFor="let endereco of enderecos">
+              <div>
+                <div class="tag-row">
+                  <span>{{ endereco.tipo }}</span>
+                  <strong *ngIf="endereco.principal">Principal</strong>
+                </div>
+
+                <h3>{{ endereco.nome }}</h3>
+                <p>{{ endereco.rua }}, {{ endereco.numero }}</p>
+                <p *ngIf="endereco.complemento">{{ endereco.complemento }}</p>
+                <p>{{ endereco.bairro }} - {{ endereco.cidade }}/{{ endereco.estado }}</p>
+                <p>CEP: {{ endereco.cep }} • {{ endereco.telefone }}</p>
+              </div>
+
+              <div class="card-actions">
+                <button
+                  type="button"
+                  *ngIf="!endereco.principal"
+                  (click)="definirEnderecoPrincipal(endereco.id)">
+                  Principal
+                </button>
+
+                <button
+                  type="button"
+                  class="delete-button"
+                  (click)="removerEndereco(endereco.id)"
+                  aria-label="Remover endereço">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <div class="empty-state" *ngIf="enderecos.length === 0">
+            <mat-icon>location_off</mat-icon>
+            <h3>Nenhum endereço cadastrado</h3>
+            <p>Adicione um endereço para facilitar suas próximas compras.</p>
+          </div>
+        </article>
+
+        <article class="content-card" *ngIf="abaAtiva === 'pagamentos'">
+          <div class="card-title">
+            <mat-icon>credit_card</mat-icon>
+
+            <div>
+              <h2>Meus pagamentos</h2>
+              <p>Cadastre formas de pagamento para agilizar o checkout.</p>
+            </div>
+          </div>
+
+          <form class="form-grid" [formGroup]="pagamentoForm">
+            <div class="field">
+              <label>Tipo</label>
+              <select formControlName="tipo">
+                <option value="Cartão">Cartão</option>
+                <option value="PIX">PIX</option>
+                <option value="Boleto">Boleto</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Apelido</label>
+              <input formControlName="apelido" placeholder="Ex: Cartão principal">
+              <small *ngIf="campoInvalido(pagamentoForm, 'apelido')">
+                Informe um apelido para o pagamento.
+              </small>
+            </div>
+
+            <div class="field">
+              <label>Titular</label>
+              <input formControlName="titular" placeholder="Nome impresso no cartão">
+            </div>
+
+            <div class="field">
+              <label>Número do cartão</label>
+              <input formControlName="numeroCartao" placeholder="Digite o número ou últimos 4 dígitos">
+            </div>
+
+            <label class="checkbox-field full">
+              <input type="checkbox" formControlName="principal">
+              Definir como pagamento principal
+            </label>
+          </form>
+
+          <div class="actions">
+            <button type="button" class="primary-button" (click)="adicionarPagamento()">
+              Adicionar pagamento
+            </button>
+          </div>
+
+          <div class="payment-list" *ngIf="pagamentos.length > 0">
+            <article class="payment-card" *ngFor="let pagamento of pagamentos">
+              <div>
+                <div class="tag-row">
+                  <span>{{ pagamento.tipo }}</span>
+                  <strong *ngIf="pagamento.principal">Principal</strong>
+                </div>
+
+                <h3>{{ pagamento.apelido }}</h3>
+
+                <p *ngIf="pagamento.tipo === 'Cartão'">
+                  Final {{ pagamento.finalCartao }} • {{ pagamento.titular || 'Titular não informado' }}
+                </p>
+
+                <p *ngIf="pagamento.tipo !== 'Cartão'">
+                  Pagamento por {{ pagamento.tipo }}
+                </p>
+              </div>
+
+              <div class="card-actions">
+                <button
+                  type="button"
+                  *ngIf="!pagamento.principal"
+                  (click)="definirPagamentoPrincipal(pagamento.id)">
+                  Principal
+                </button>
+
+                <button
+                  type="button"
+                  class="delete-button"
+                  (click)="removerPagamento(pagamento.id)"
+                  aria-label="Remover pagamento">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <div class="empty-state" *ngIf="pagamentos.length === 0">
+            <mat-icon>credit_card_off</mat-icon>
+            <h3>Nenhuma forma de pagamento cadastrada</h3>
+            <p>Você pode cadastrar cartão, PIX ou boleto para usar no checkout.</p>
+          </div>
+        </article>
+
+      </section>
+
+    </section>
+
+  </main>
+
+</div>

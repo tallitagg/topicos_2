@@ -1,0 +1,205 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f4f0f7;
+}
+
+.cadastro-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 42% 58%;
+  background: #f4f0f7;
+}
+
+.brand-side {
+  background: linear-gradient(180deg, #b58dcb, #a57bc3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  color: white;
+}
+
+.brand-content {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brand-content h1 {
+  margin: 0 0 70px;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.product-card {
+  width: 100%;
+  background: white;
+  border-radius: 30px;
+  padding: 32px;
+  color: #4b2e5e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 14px 34px rgba(75, 46, 94, 0.18);
+}
+
+.bottle-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 32px;
+  background: #f4f0f7;
+  border: 2px solid #d9b6ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottle-icon mat-icon {
+  font-size: 70px;
+  width: 70px;
+  height: 70px;
+  color: #b98ad8;
+}
+
+.product-card h2 {
+  margin: 10px 0 0;
+  font-size: 1.7rem;
+  color: #4b2e5e;
+}
+
+.product-card p {
+  margin: 0;
+  max-width: 280px;
+  text-align: center;
+  color: #6a5b75;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.cadastro-card {
+  width: 100%;
+  max-width: 560px;
+  padding: 34px;
+  border-radius: 34px;
+  border: 2px solid #d9b6ea;
+  background: white;
+  box-shadow: 0 14px 34px rgba(122, 79, 145, 0.10);
+}
+
+.title-area {
+  margin-bottom: 24px;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #8d63b4;
+}
+
+.title-area h1 {
+  margin: 0;
+  font-size: 2.4rem;
+  line-height: 1.05;
+  font-weight: 800;
+  color: #4b2e5e;
+}
+
+.title-area p {
+  margin: 8px 0 0;
+  color: #6a5b75;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.form mat-form-field {
+  width: 100%;
+}
+
+.form-error,
+.cadastro-button,
+.links {
+  grid-column: 1 / -1;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.eye-button {
+  color: #8d63b4;
+}
+
+.form-error {
+  color: #c62828;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: -6px;
+}
+
+.cadastro-button {
+  height: 48px;
+  border-radius: 16px;
+  background: #b98ad8 !important;
+  color: white !important;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 8px 18px rgba(181, 141, 203, 0.28);
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 700;
+  color: #6a5b75;
+}
+
+.links a {
+  color: #8d63b4;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .cadastro-page {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-side {
+    display: none;
+  }
+
+  .form-side {
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .cadastro-card {
+    padding: 26px;
+  }
+
+  .title-area h1 {
+    font-size: 2.4rem;
+  }
+}

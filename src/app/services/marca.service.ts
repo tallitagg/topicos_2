@@ -1,38 +1,45 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { Marca } from "../models/marca";
-
-
-export interface MarcaDTO {
-  nome: string;
-}
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Marca } from '../models/marca';
 
 @Injectable({
-    providedIn: "root"
+  providedIn: 'root'
 })
 export class MarcaService {
-    private apiUrl = "http://localhost:8080/api/marcas";
 
-  constructor(private http: HttpClient) {}
+  private readonly api = 'http://localhost:8080/marcas';
 
-  getMarcas(): Observable<Marca[]> {
-    return this.http.get<Marca[]>(this.apiUrl);
-  }   
+  constructor(private httpClient: HttpClient) {}
 
-  getMarcasByName(nome: string): Observable<Marca[]> {
-    return this.http.get<Marca[]>(`${this.apiUrl}?nome=${nome}`);
+  findAll(page?: number, pageSize?: number, nome?: string): Observable<Marca[]> {
+    let params = new HttpParams();
+
+    if (page !== undefined && pageSize !== undefined) {
+      params = params.set('page', page.toString());
+      params = params.set('size', pageSize.toString());
+    }
+
+    if (nome) {
+      params = params.set('nome', nome);
+    }
+
+    return this.httpClient.get<Marca[]>(this.api, { params });
   }
 
-  incluirMarca(marca: MarcaDTO): Observable<Marca> {
-    return this.http.post<Marca>(this.apiUrl, marca);
-  }       
-
-  alterarMarca(id: number, marca: MarcaDTO): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, marca);
+  findById(id: number): Observable<Marca> {
+    return this.httpClient.get<Marca>(`${this.api}/${id}`);
   }
 
-  deleteMarca(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  create(marca: Marca): Observable<Marca> {
+    return this.httpClient.post<Marca>(this.api, marca);
+  }
+
+  update(marca: Marca): Observable<Marca> {
+    return this.httpClient.put<Marca>(`${this.api}/${marca.id}`, marca);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.api}/${id}`);
   }
 }

@@ -1,0 +1,64 @@
+<div class="page-content">
+  <div class="header-row">
+    <div class="title-area">
+      <span class="subtitle">CADASTRO</span>
+      <h1>{{ form.value.id ? 'Editar Material' : 'Cadastrar Novo Material' }}</h1>
+      <p>Preencha as informações abaixo:</p>
+    </div>
+  </div>
+
+  <mat-card class="card">
+    <mat-card-content>
+      <form class="form" [formGroup]="form">
+        <div class="grid">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tipo*</mat-label>
+            <input matInput formControlName="tipo" placeholder="Digite o tipo do material" />
+            <mat-error *ngIf="form.get('tipo')?.hasError('required') && form.get('tipo')?.touched">
+              O tipo é obrigatório.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Resistência à Temperatura*</mat-label>
+            <input matInput type="number" formControlName="resistenciaTemperatura" />
+            <mat-error *ngIf="form.get('resistenciaTemperatura')?.invalid && form.get('resistenciaTemperatura')?.touched">
+              Informe um valor válido.
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+
+        <div class="actions">
+          <button
+            mat-raised-button
+            type="button"
+            class="cancel-button"
+            routerLink="/materiais">
+            Cancelar
+          </button>
+
+          <button
+            *ngIf="form.value.id"
+            mat-raised-button
+            type="button"
+            color="warn"
+            class="delete-button"
+            (click)="excluir()">
+            Excluir
+          </button>
+
+          <button
+            mat-raised-button
+            type="button"
+            class="save-button"
+            (click)="salvar()"
+            [disabled]="form.invalid">
+            Salvar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

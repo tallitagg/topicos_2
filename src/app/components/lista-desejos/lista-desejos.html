@@ -1,0 +1,149 @@
+<div class="wishlist-page">
+
+  <header class="site-header">
+    <div class="logo-area">
+      <div class="logo-mark">E</div>
+      <span>E-Garrafas</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/catalogo">Início</a>
+      <a routerLink="/catalogo">Catálogo</a>
+      <a routerLink="/catalogo">Ofertas</a>
+      <a routerLink="/catalogo">Sobre</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="icon-button active" routerLink="/desejos" aria-label="Lista de desejos">
+        <mat-icon>favorite_border</mat-icon>
+        <span *ngIf="quantidadeDesejos() > 0">{{ quantidadeDesejos() }}</span>
+      </a>
+
+      <a class="icon-button" routerLink="/carrinho" aria-label="Carrinho">
+        <mat-icon>shopping_cart</mat-icon>
+        <span *ngIf="quantidadeCarrinho() > 0">{{ quantidadeCarrinho() }}</span>
+      </a>
+
+      <a class="icon-button" routerLink="/perfil" aria-label="Perfil">
+        <mat-icon>person_outline</mat-icon>
+      </a>
+    </div>
+  </header>
+
+  <main class="wishlist-container">
+
+    <section class="wishlist-title">
+      <span class="page-label">LISTA DE DESEJOS</span>
+      <h1>Meus Favoritos</h1>
+
+      <p *ngIf="produtos.length > 0">
+        Você salvou {{ produtos.length }} produto(s) para comprar depois.
+      </p>
+
+      <p *ngIf="produtos.length === 0">
+        Sua lista de desejos ainda está vazia. Explore o catálogo e favorite suas garrafas preferidas.
+      </p>
+    </section>
+
+    <section class="empty-wishlist" *ngIf="produtos.length === 0">
+      <div class="empty-icon">
+        <mat-icon>favorite_border</mat-icon>
+      </div>
+
+      <h2>Nenhum produto favoritado</h2>
+      <p>Adicione produtos à lista de desejos para encontrá-los facilmente depois.</p>
+
+      <a routerLink="/catalogo" class="primary-button">
+        Ver Catálogo
+      </a>
+    </section>
+
+    <section class="wishlist-grid" *ngIf="produtos.length > 0">
+
+      <article class="wishlist-card" *ngFor="let produto of produtos">
+
+        <button
+          type="button"
+          class="remove-favorite"
+          (click)="remover(produto)"
+          aria-label="Remover dos favoritos">
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <div class="product-image-area">
+          <img
+            *ngIf="getImagemProduto(produto); else semImagem"
+            [src]="getImagemProduto(produto)"
+            [alt]="produto.nome">
+
+          <ng-template #semImagem>
+            <div class="product-placeholder">
+              <mat-icon>local_drink</mat-icon>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="product-info">
+          <span class="product-tag">
+            {{ produto.marca?.nome || 'Linha Premium' }}
+          </span>
+
+          <h2>{{ produto.nome }}</h2>
+
+          <p>
+            {{ produto.capacidade || '0.50' }}L
+            <span *ngIf="produto.material?.tipo">
+              • {{ produto.material?.tipo }}
+            </span>
+          </p>
+
+          <strong>{{ formatarPreco(produto.preco) }}</strong>
+
+          <div class="card-actions">
+            <button
+              type="button"
+              class="primary-action"
+              (click)="moverParaCarrinho(produto)">
+              <mat-icon>add_shopping_cart</mat-icon>
+              Mover para o carrinho
+            </button>
+          </div>
+        </div>
+
+      </article>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <h2>E-Garrafas</h2>
+      <p>Garrafas térmicas premium para transformar sua rotina com estilo e praticidade.</p>
+    </div>
+
+    <div>
+      <h4>Produtos</h4>
+      <a>Térmicas</a>
+      <a>Esportivas</a>
+      <a>Acessórios</a>
+    </div>
+
+    <div>
+      <h4>Suporte</h4>
+      <a>Envio</a>
+      <a>Privacidade</a>
+      <a>Termos de Uso</a>
+    </div>
+
+    <div>
+      <h4>Contato</h4>
+      <a>ajuda&#64;egarrafas.com.br</a>
+      <div class="social-icons">
+        <mat-icon>share</mat-icon>
+        <mat-icon>public</mat-icon>
+      </div>
+    </div>
+  </footer>
+
+</div>

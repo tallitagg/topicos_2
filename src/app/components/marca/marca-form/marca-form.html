@@ -1,0 +1,45 @@
+<div class="page-content">
+  <div class="header-row">
+    <div class="title-area">
+      <span class="subtitle">CADASTRO</span>
+      <h1>Cadastrar Nova Marca</h1>
+      <p>Preencha as informações abaixo:</p>
+    </div>
+  </div>
+
+  <mat-card class="card">
+    <mat-card-content>
+      <form class="form" [formGroup]="form">
+        <div class="grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Nome*</mat-label>
+            <input matInput formControlName="nome" placeholder="Digite o nome da marca" />
+
+            <mat-error *ngIf="form.get('nome')?.hasError('required') && form.get('nome')?.touched">
+              O nome é obrigatório.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="actions">
+          <button
+            mat-raised-button
+            type="button"
+            class="cancel-button"
+            routerLink="/marcas">
+            Cancelar
+          </button>
+
+          <button
+            mat-raised-button
+            type="button"
+            class="save-button"
+            (click)="salvar()"
+            [disabled]="form.invalid">
+            Salvar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

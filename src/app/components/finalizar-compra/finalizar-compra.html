@@ -1,0 +1,377 @@
+<div class="checkout-page">
+
+  <header class="site-header">
+    <div class="logo-area">
+      <div class="logo-mark">E</div>
+      <span>E-Garrafas</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/catalogo">Início</a>
+      <a routerLink="/catalogo">Catálogo</a>
+      <a routerLink="/catalogo">Ofertas</a>
+      <a routerLink="/catalogo">Sobre</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="icon-button" routerLink="/desejos">
+        <mat-icon>favorite_border</mat-icon>
+        <span *ngIf="quantidadeDesejos() > 0">{{ quantidadeDesejos() }}</span>
+      </a>
+
+      <a class="icon-button active" routerLink="/carrinho">
+        <mat-icon>shopping_cart</mat-icon>
+        <span *ngIf="quantidadeCarrinho() > 0">{{ quantidadeCarrinho() }}</span>
+      </a>
+
+      <a class="icon-button" routerLink="/perfil">
+        <mat-icon>person_outline</mat-icon>
+      </a>
+    </div>
+  </header>
+
+  <main class="checkout-container">
+
+    <section class="checkout-title">
+      <span class="page-label">CHECKOUT</span>
+      <h1>Finalizar Compra</h1>
+      <p>Conclua seu pedido em três etapas simples.</p>
+    </section>
+
+    <section class="steps">
+      <div class="step" [class.active]="etapaAtiva(1)" [class.done]="etapaConcluida(1)">
+        <div class="step-circle">
+          <mat-icon *ngIf="etapaConcluida(1)">check</mat-icon>
+          <span *ngIf="!etapaConcluida(1)">1</span>
+        </div>
+        <span>Endereço</span>
+      </div>
+
+      <div class="step-line" [class.done]="etapaConcluida(1)"></div>
+
+      <div class="step" [class.active]="etapaAtiva(2)" [class.done]="etapaConcluida(2)">
+        <div class="step-circle">
+          <mat-icon *ngIf="etapaConcluida(2)">check</mat-icon>
+          <span *ngIf="!etapaConcluida(2)">2</span>
+        </div>
+        <span>Pagamento</span>
+      </div>
+
+      <div class="step-line" [class.done]="etapaConcluida(2)"></div>
+
+      <div class="step" [class.active]="etapaAtiva(3)">
+        <div class="step-circle">
+          <span>3</span>
+        </div>
+        <span>Revisão</span>
+      </div>
+    </section>
+
+    <section class="checkout-layout">
+
+      <div class="checkout-main" [formGroup]="form">
+
+        <section class="form-card" *ngIf="etapaAtual === 1">
+          <div class="card-title">
+            <mat-icon>local_shipping</mat-icon>
+            <div>
+              <h2>Endereço de Entrega</h2>
+              <p>Informe o local onde seu pedido será entregue.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label>Nome do destinatário</label>
+              <input formControlName="nome" placeholder="Ex.: Tallita Gabriela">
+              <small *ngIf="campoInvalido('nome')">O nome é obrigatório.</small>
+            </div>
+
+            <div class="field">
+              <label>Telefone</label>
+              <input formControlName="telefone" placeholder="(63) 99999-9999">
+              <small *ngIf="campoInvalido('telefone')">Informe um telefone válido.</small>
+            </div>
+
+            <div class="field">
+              <label>CEP</label>
+              <input formControlName="cep" placeholder="77000-000">
+              <small *ngIf="campoInvalido('cep')">O CEP é obrigatório.</small>
+            </div>
+
+            <div class="field full">
+              <label>Rua / Avenida</label>
+              <input formControlName="rua" placeholder="Ex.: Avenida JK">
+              <small *ngIf="campoInvalido('rua')">A rua é obrigatória.</small>
+            </div>
+
+            <div class="field">
+              <label>Número</label>
+              <input formControlName="numero" placeholder="Ex.: 120">
+              <small *ngIf="campoInvalido('numero')">O número é obrigatório.</small>
+            </div>
+
+            <div class="field">
+              <label>Complemento</label>
+              <input formControlName="complemento" placeholder="Casa, bloco, apartamento...">
+            </div>
+
+            <div class="field">
+              <label>Bairro</label>
+              <input formControlName="bairro" placeholder="Ex.: Centro">
+              <small *ngIf="campoInvalido('bairro')">O bairro é obrigatório.</small>
+            </div>
+
+            <div class="field">
+              <label>Cidade</label>
+              <input formControlName="cidade" placeholder="Ex.: Palmas">
+              <small *ngIf="campoInvalido('cidade')">A cidade é obrigatória.</small>
+            </div>
+
+            <div class="field">
+              <label>Estado</label>
+              <input formControlName="estado" placeholder="TO" maxlength="2">
+              <small *ngIf="campoInvalido('estado')">O estado é obrigatório.</small>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <a routerLink="/carrinho" class="outline-link">Voltar ao carrinho</a>
+
+            <button type="button" class="primary-action" (click)="irParaPagamento()">
+              Continuar para pagamento
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </section>
+
+        <section class="form-card" *ngIf="etapaAtual === 2">
+          <div class="card-title">
+            <mat-icon>payments</mat-icon>
+            <div>
+              <h2>Pagamento</h2>
+              <p>Escolha a forma de pagamento e preencha as informações necessárias.</p>
+            </div>
+          </div>
+
+          <div class="payment-options">
+            <label class="payment-option">
+              <input type="radio" formControlName="pagamento" value="PIX">
+              <span>
+                <strong>PIX</strong>
+                <small>Código gerado para pagamento instantâneo.</small>
+              </span>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" formControlName="pagamento" value="CARTAO_CREDITO">
+              <span>
+                <strong>Cartão de crédito</strong>
+                <small>Pagamento aprovado após conferência dos dados.</small>
+              </span>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" formControlName="pagamento" value="BOLETO">
+              <span>
+                <strong>Boleto bancário</strong>
+                <small>Vencimento em até 3 dias.</small>
+              </span>
+            </label>
+          </div>
+
+          <div class="payment-box" *ngIf="form.value.pagamento === 'PIX'">
+            <div class="payment-box-header">
+              <mat-icon>qr_code_2</mat-icon>
+              <div>
+                <h3>PIX copia e cola</h3>
+                <p>Use o código abaixo para simular o pagamento via PIX.</p>
+              </div>
+            </div>
+
+            <textarea readonly>{{ codigoPix }}</textarea>
+
+            <button type="button" class="copy-button" (click)="copiarTexto(codigoPix)">
+              Copiar código PIX
+            </button>
+          </div>
+
+          <div class="payment-box" *ngIf="form.value.pagamento === 'BOLETO'">
+            <div class="payment-box-header">
+              <mat-icon>receipt_long</mat-icon>
+              <div>
+                <h3>Boleto bancário</h3>
+                <p>Vencimento em {{ vencimentoBoleto }}.</p>
+              </div>
+            </div>
+
+            <textarea readonly>{{ linhaBoleto }}</textarea>
+
+            <button type="button" class="copy-button" (click)="copiarTexto(linhaBoleto)">
+              Copiar linha digitável
+            </button>
+          </div>
+
+          <div class="card-form" *ngIf="form.value.pagamento === 'CARTAO_CREDITO'">
+            <div class="field full">
+              <label>Nome impresso no cartão</label>
+              <input formControlName="nomeCartao" placeholder="Nome como aparece no cartão">
+              <small *ngIf="campoInvalido('nomeCartao')">O nome no cartão é obrigatório.</small>
+            </div>
+
+            <div class="field full">
+              <label>Número do cartão</label>
+              <input formControlName="numeroCartao" placeholder="0000 0000 0000 0000">
+              <small *ngIf="campoInvalido('numeroCartao')">Informe o número do cartão.</small>
+            </div>
+
+            <div class="field">
+              <label>Validade</label>
+              <input formControlName="validadeCartao" placeholder="MM/AA">
+              <small *ngIf="campoInvalido('validadeCartao')">Informe a validade.</small>
+            </div>
+
+            <div class="field">
+              <label>CVV</label>
+              <input formControlName="cvvCartao" placeholder="123">
+              <small *ngIf="campoInvalido('cvvCartao')">Informe o CVV.</small>
+            </div>
+
+            <div class="field full">
+              <label>Parcelas</label>
+              <select formControlName="parcelas">
+                <option value="1">1x sem juros</option>
+                <option value="2">2x sem juros</option>
+                <option value="3">3x sem juros</option>
+                <option value="4">4x sem juros</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="outline-button" (click)="voltarEtapa()">
+              Voltar
+            </button>
+
+            <button type="button" class="primary-action" (click)="irParaRevisao()">
+              Continuar para revisão
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </section>
+
+        <section class="form-card" *ngIf="etapaAtual === 3">
+          <div class="card-title">
+            <mat-icon>fact_check</mat-icon>
+            <div>
+              <h2>Revisão do Pedido</h2>
+              <p>Confira todos os dados antes de confirmar a compra.</p>
+            </div>
+          </div>
+
+          <div class="review-grid">
+            <article class="review-box">
+              <h3>Entrega</h3>
+              <p><strong>{{ form.value.nome }}</strong></p>
+              <p>{{ form.value.rua }}, {{ form.value.numero }}</p>
+              <p *ngIf="form.value.complemento">{{ form.value.complemento }}</p>
+              <p>{{ form.value.bairro }} - {{ form.value.cidade }}/{{ form.value.estado }}</p>
+              <p>CEP: {{ form.value.cep }}</p>
+              <p>Telefone: {{ form.value.telefone }}</p>
+            </article>
+
+            <article class="review-box">
+              <h3>Pagamento</h3>
+              <p><strong>{{ nomePagamento() }}</strong></p>
+              <p>Status: {{ statusPagamento() }}</p>
+
+              <p *ngIf="form.value.pagamento === 'PIX'">
+                Código PIX gerado para pagamento.
+              </p>
+
+              <p *ngIf="form.value.pagamento === 'BOLETO'">
+                Vencimento: {{ vencimentoBoleto }}
+              </p>
+
+              <p *ngIf="form.value.pagamento === 'CARTAO_CREDITO'">
+                Cartão final {{ pegarFinalCartao(form.value.numeroCartao) }} • {{ form.value.parcelas }}x
+              </p>
+            </article>
+          </div>
+
+          <div class="review-items">
+            <h3>Produtos</h3>
+
+            <article class="review-item" *ngFor="let item of itens">
+              <div class="review-image">
+                <img
+                  *ngIf="getImagemProduto(item.produto); else semImagemReview"
+                  [src]="getImagemProduto(item.produto)"
+                  [alt]="item.produto.nome">
+
+                <ng-template #semImagemReview>
+                  <div class="review-placeholder">
+                    <mat-icon>local_drink</mat-icon>
+                  </div>
+                </ng-template>
+              </div>
+
+              <div>
+                <strong>{{ item.produto.nome }}</strong>
+                <span>Qtd. {{ item.quantidade }}</span>
+              </div>
+
+              <p>{{ formatarPreco(subtotalItem(item)) }}</p>
+            </article>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="outline-button" (click)="voltarEtapa()">
+              Voltar
+            </button>
+
+            <button type="button" class="primary-action" (click)="confirmarCompra()">
+              Confirmar compra
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          </div>
+        </section>
+
+      </div>
+
+      <aside class="order-summary">
+        <h2>Resumo</h2>
+
+        <div class="summary-line">
+          <span>Subtotal</span>
+          <strong>{{ formatarPreco(subtotal()) }}</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Frete</span>
+          <strong class="free">Grátis</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Desconto</span>
+          <strong>- {{ formatarPreco(desconto()) }}</strong>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <strong>{{ formatarPreco(total()) }}</strong>
+        </div>
+
+        <div class="safe-box">
+          <mat-icon>shield</mat-icon>
+          <p>Compra segura com proteção de dados e garantia de devolução.</p>
+        </div>
+      </aside>
+
+    </section>
+
+  </main>
+
+</div>
