@@ -7,7 +7,7 @@ import {
   Validators
 } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -18,7 +18,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import {
   AuthResponse,
-  EcommerceAuthService
+  EcommerceAuthService,
+  UsuarioLogado
 } from '../../services/ecommerce-auth.service';
 
 @Component({
@@ -48,6 +49,7 @@ export class LoginComponent {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private snack: MatSnackBar,
     private authService: EcommerceAuthService
   ) {
@@ -73,21 +75,39 @@ export class LoginComponent {
 
     this.authService.login(dto).subscribe({
       next: (response: HttpResponse<AuthResponse>) => {
-        this.carregando = false;
-
         const tokenBody = response.body?.token;
         const tokenHeader = response.headers.get('Authorization');
         const token = tokenBody || tokenHeader;
 
         if (!token) {
+          this.carregando = false;
           this.exibirMensagem('Login realizado, mas o token não foi retornado.');
           return;
         }
 
-        this.authService.salvarToken(token);
+        const perfilResposta =
+          response.body?.perfil ||
+          response.body?.tipo ||
+          null;
 
-        this.exibirMensagem('Login realizado com sucesso!');
-        this.router.navigateByUrl('/catalogo');
+        this.authService.salvarToken(token, perfilResposta);
+
+        this.authService.buscarUsuarioLogado().subscribe({
+          next: (usuario: UsuarioLogado) => {
+            this.carregando = false;
+
+            this.authService.salvarPerfil(usuario.perfil);
+
+            this.exibirMensagem('Login realizado com sucesso!');
+            this.redirecionarAposLogin();
+          },
+          error: () => {
+            this.carregando = false;
+
+            this.exibirMensagem('Login realizado com sucesso!');
+            this.redirecionarAposLogin();
+          }
+        });
       },
       error: () => {
         this.carregando = false;
@@ -106,6 +126,22 @@ export class LoginComponent {
 
   irParaRecuperarSenha(): void {
     this.router.navigateByUrl('/recuperar-senha');
+  }
+
+  private redirecionarAposLogin(): void {
+    const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl');
+
+    if (returnUrl && returnUrl !== '/login') {
+      if (returnUrl.startsWith('/admin') && !this.authService.isAdmin()) {
+        this.router.navigateByUrl('/catalogo');
+        return;
+      }
+
+      this.router.navigateByUrl(returnUrl);
+      return;
+    }
+
+    this.router.navigateByUrl(this.authService.rotaInicialPorPerfil());
   }
 
   private exibirMensagem(mensagem: string): void {

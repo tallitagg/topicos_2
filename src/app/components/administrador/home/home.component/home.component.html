@@ -1,0 +1,190 @@
+<div class="admin-page">
+
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">E</div>
+
+      <div>
+        <strong>E-Garrafas</strong>
+        <span>Administração</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button
+        type="button"
+        *ngFor="let aba of abas"
+        [class.active]="abaAtiva === aba.id"
+        (click)="selecionarAba(aba.id)">
+
+        <mat-icon>{{ aba.icone }}</mat-icon>
+
+        <span>{{ aba.titulo }}</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button type="button" (click)="irParaCatalogo()">
+        <mat-icon>storefront</mat-icon>
+        <span>Ver catálogo</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="admin-content">
+
+    <header class="admin-header">
+      <div>
+        <span class="eyebrow">PAINEL ADMINISTRATIVO</span>
+
+        <h1>Gerenciamento do E-Garrafas</h1>
+
+        <p>
+          Controle os cadastros principais do e-commerce, acompanhe indicadores
+          e mantenha o catálogo do cliente organizado.
+        </p>
+      </div>
+    </header>
+
+    <section class="tab-panel">
+
+      <div class="tab-title">
+        <div>
+          <span class="eyebrow">{{ abaSelecionada.subtitulo }}</span>
+
+          <h2>{{ abaSelecionada.titulo }}</h2>
+
+          <p>{{ abaSelecionada.descricao }}</p>
+        </div>
+
+        <div class="tab-actions">
+          <button
+            *ngIf="abaAtiva === 'dashboard'"
+            type="button"
+            class="open-module-button"
+            (click)="carregarIndicadores()">
+
+            <span>Atualizar indicadores</span>
+            <mat-icon>refresh</mat-icon>
+          </button>
+
+          <button
+            *ngIf="abaSelecionada.rota"
+            type="button"
+            class="open-module-button"
+            (click)="abrirGerenciamento()">
+
+            <span>Abrir gerenciamento</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <ng-container *ngIf="abaAtiva === 'dashboard'">
+
+        <section class="metrics-grid">
+          <article class="metric-card primary">
+            <span>Valor vendido</span>
+            <strong>{{ formatarMoeda(indicadores.valorVendido) }}</strong>
+            <p>{{ indicadores.vendasRegistradas }} venda(s) registrada(s)</p>
+          </article>
+
+          <article class="metric-card">
+            <span>Valor em estoque</span>
+            <strong>{{ formatarMoeda(indicadores.valorEmEstoque) }}</strong>
+            <p>Estimativa baseada em preço x estoque.</p>
+          </article>
+
+          <article class="metric-card">
+            <span>Estoque total</span>
+            <strong>{{ formatarNumero(indicadores.estoqueTotal) }}</strong>
+            <p>Quantidade total de unidades cadastradas.</p>
+          </article>
+
+          <article class="metric-card">
+            <span>Produtos cadastrados</span>
+            <strong>{{ formatarNumero(indicadores.totalProdutos) }}</strong>
+            <p>Produtos disponíveis na base do catálogo.</p>
+          </article>
+
+          <article class="metric-card warning">
+            <span>Baixo estoque</span>
+            <strong>{{ formatarNumero(indicadores.baixoEstoque) }}</strong>
+            <p>Produtos com até 5 unidades.</p>
+          </article>
+
+          <article class="metric-card danger">
+            <span>Sem estoque</span>
+            <strong>{{ formatarNumero(indicadores.semEstoque) }}</strong>
+            <p>Produtos que precisam de reposição.</p>
+          </article>
+        </section>
+
+        <section class="dashboard-status">
+          <article>
+            <div>
+              <span class="eyebrow">IMAGENS</span>
+
+              <h3>Produtos com imagem</h3>
+
+              <p>
+                {{ indicadores.produtosComImagem }} de {{ indicadores.totalProdutos }}
+                produto(s) possuem imagem cadastrada.
+              </p>
+            </div>
+
+            <div class="progress">
+              <div [style.width.%]="percentualComImagem()"></div>
+            </div>
+          </article>
+
+          <article>
+            <div>
+              <span class="eyebrow">ESTOQUE</span>
+
+              <h3>Atenção necessária</h3>
+
+              <p>
+                {{ percentualEstoqueCritico() }}% dos produtos estão sem estoque
+                ou com estoque baixo.
+              </p>
+            </div>
+
+            <div class="progress danger-progress">
+              <div [style.width.%]="percentualEstoqueCritico()"></div>
+            </div>
+          </article>
+        </section>
+
+      </ng-container>
+
+      <ng-container *ngIf="abaAtiva !== 'dashboard'">
+
+        <section class="module-detail">
+          <div class="module-icon-large">
+            <mat-icon>{{ abaSelecionada.icone }}</mat-icon>
+          </div>
+
+          <div class="module-copy">
+            <span>{{ abaSelecionada.destaque }}</span>
+
+            <h3>{{ abaSelecionada.titulo }}</h3>
+
+            <p>{{ abaSelecionada.descricao }}</p>
+
+            <ul>
+              <li *ngFor="let ponto of abaSelecionada.pontos">
+                <mat-icon>check_circle</mat-icon>
+                <span>{{ ponto }}</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+      </ng-container>
+
+    </section>
+
+  </main>
+
+</div>

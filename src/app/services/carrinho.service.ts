@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+
 import { Produto } from '../models/produto';
 import { EcommerceAuthService } from './ecommerce-auth.service';
 
@@ -25,6 +26,11 @@ export class CarrinhoService {
 
     if (existente) {
       existente.quantidade += 1;
+
+      existente.produto = {
+        ...existente.produto,
+        ...produto
+      };
     } else {
       itens.push({
         produto,
@@ -35,8 +41,32 @@ export class CarrinhoService {
     this.salvar(itens);
   }
 
+  atualizarProduto(produto: Produto): void {
+    if (!produto.id) {
+      return;
+    }
+
+    const itens = this.listar().map(item => {
+      if (item.produto.id !== produto.id) {
+        return item;
+      }
+
+      return {
+        ...item,
+        produto: {
+          ...item.produto,
+          ...produto
+        }
+      };
+    });
+
+    this.salvar(itens);
+  }
+
   aumentar(produtoId: number | undefined): void {
-    if (!produtoId) return;
+    if (!produtoId) {
+      return;
+    }
 
     const itens = this.listar();
     const item = itens.find(i => i.produto.id === produtoId);
@@ -48,23 +78,30 @@ export class CarrinhoService {
   }
 
   diminuir(produtoId: number | undefined): void {
-    if (!produtoId) return;
+    if (!produtoId) {
+      return;
+    }
 
     const itens = this.listar();
     const item = itens.find(i => i.produto.id === produtoId);
 
-    if (!item) return;
+    if (!item) {
+      return;
+    }
 
     if (item.quantidade > 1) {
       item.quantidade -= 1;
       this.salvar(itens);
-    } else {
-      this.remover(produtoId);
+      return;
     }
+
+    this.remover(produtoId);
   }
 
   remover(produtoId: number | undefined): void {
-    if (!produtoId) return;
+    if (!produtoId) {
+      return;
+    }
 
     const itens = this.listar().filter(item => item.produto.id !== produtoId);
     this.salvar(itens);

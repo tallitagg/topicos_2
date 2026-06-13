@@ -1,0 +1,264 @@
+<div class="catalogo-page">
+  <div class="catalogo-container">
+
+    <header class="topbar" id="inicio">
+      <div class="brand">
+        <div class="brand-logo">E</div>
+
+        <div class="brand-text">
+          <strong>E-Garrafas</strong>
+          <span>garrafas térmicas premium</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button type="button" (click)="irParaSecao('inicio')">
+          Início
+        </button>
+
+        <button type="button" (click)="irParaSecao('catalogo')">
+          Catálogo
+        </button>
+
+        <button type="button" (click)="irParaSecao('sobre')">
+          Sobre
+        </button>
+      </nav>
+
+      <div class="top-actions">
+        <div class="search-box">
+          <mat-icon>search</mat-icon>
+
+          <input
+            type="text"
+            placeholder="Buscar por nome, marca, modelo ou material..."
+            [(ngModel)]="busca"
+            (ngModelChange)="aplicarFiltro()">
+
+          <button
+            *ngIf="busca"
+            type="button"
+            class="clear-search"
+            (click)="limparBusca()"
+            aria-label="Limpar pesquisa">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <a routerLink="/desejos" class="action-icon" aria-label="Favoritos">
+          <mat-icon>favorite_border</mat-icon>
+          <small *ngIf="quantidadeDesejos() > 0">{{ quantidadeDesejos() }}</small>
+        </a>
+
+        <a routerLink="/carrinho" class="action-icon" aria-label="Carrinho">
+          <mat-icon>shopping_cart</mat-icon>
+          <small *ngIf="quantidadeCarrinho() > 0">{{ quantidadeCarrinho() }}</small>
+        </a>
+
+        <a routerLink="/perfil" class="action-icon profile-icon" aria-label="Perfil">
+          <mat-icon>person_outline</mat-icon>
+        </a>
+      </div>
+    </header>
+
+    <section class="hero-section">
+      <div class="hero-content">
+        <span class="hero-label">NOVA COLEÇÃO</span>
+
+        <h1>Pureza em cada detalhe térmico.</h1>
+
+        <p>
+          Descubra garrafas térmicas premium com design moderno, ótimo desempenho
+          e estilo para acompanhar sua rotina.
+        </p>
+
+        <div class="hero-actions">
+          <button type="button" class="btn-primary" (click)="irParaSecao('catalogo')">
+            Ver produtos
+          </button>
+
+          <button type="button" class="btn-secondary" (click)="irParaSecao('sobre')">
+            Conheça a marca
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="bottle-shape"></div>
+      </div>
+    </section>
+
+    <section class="catalog-summary">
+      <div class="summary-left">
+        <span class="summary-label">CATÁLOGO</span>
+
+        <h2>Garrafas disponíveis</h2>
+
+        <p>
+          Produtos cadastrados no sistema com preço, capacidade e imagem real.
+        </p>
+      </div>
+
+      <div class="summary-right">
+        <span>{{ produtosFiltrados.length }} produto(s) encontrado(s)</span>
+
+        <button
+          *ngIf="busca"
+          type="button"
+          class="summary-clear"
+          (click)="limparBusca()">
+          Limpar pesquisa
+        </button>
+      </div>
+    </section>
+
+    <section class="products-section" id="catalogo">
+      <div *ngIf="carregando" class="products-grid">
+        <div class="product-card skeleton-card" *ngFor="let item of skeletons">
+          <div class="product-image skeleton"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      </div>
+
+      <div *ngIf="!carregando && erro" class="feedback-box error-box">
+        <h3>Ops!</h3>
+
+        <p>{{ erro }}</p>
+
+        <button type="button" class="btn-primary" (click)="carregarProdutos()">
+          Tentar novamente
+        </button>
+      </div>
+
+      <div
+        *ngIf="!carregando && !erro && produtosFiltrados.length === 0"
+        class="feedback-box empty-box">
+        <h3>Nenhum produto encontrado</h3>
+
+        <p>Tente outro termo de busca ou limpe a pesquisa.</p>
+
+        <button
+          *ngIf="busca"
+          type="button"
+          class="btn-primary"
+          (click)="limparBusca()">
+          Limpar pesquisa
+        </button>
+      </div>
+
+      <div
+        *ngIf="!carregando && !erro && produtosFiltrados.length > 0"
+        class="products-grid">
+
+        <article
+          class="product-card"
+          *ngFor="let produto of produtosFiltrados; trackBy: trackByProduto"
+          (click)="abrirDetalhe(produto)">
+
+          <button
+            type="button"
+            class="favorite-button"
+            [class.active]="produto.favorito"
+            (click)="toggleFavorito(produto, $event)"
+            aria-label="Adicionar aos favoritos">
+            <mat-icon>
+              {{ produto.favorito ? 'favorite' : 'favorite_border' }}
+            </mat-icon>
+          </button>
+
+          <div class="product-image-wrapper">
+            <img
+              *ngIf="produto.imagemUrl; else semImagem"
+              class="product-image"
+              [src]="produto.imagemUrl"
+              [alt]="produto.nome">
+
+            <ng-template #semImagem>
+              <div class="product-image placeholder">
+                <span>Sem imagem</span>
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="product-tags">
+            <span class="tag">{{ produto.marca?.nome || 'Marca' }}</span>
+            <span class="tag">{{ produto.capacidade }}L</span>
+          </div>
+
+          <h3 class="product-title">{{ produto.nome }}</h3>
+
+          <div class="product-meta">
+            <span>{{ produto.estoque }} em estoque</span>
+          </div>
+
+          <div class="product-footer">
+            <div class="price-box">
+              <span class="price-label">Preço</span>
+              <strong class="price-value">R$ {{ produto.preco }},00</strong>
+            </div>
+
+            <button
+              type="button"
+              class="cart-button"
+              (click)="adicionarAoCarrinho(produto, $event)"
+              aria-label="Adicionar ao carrinho">
+              <mat-icon>add_shopping_cart</mat-icon>
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer class="site-footer" id="sobre">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>E-Garrafas</h3>
+
+          <p>
+            Soluções térmicas premium para o dia a dia, trabalho, academia e aventuras.
+          </p>
+        </div>
+
+        <div class="footer-column">
+          <h4>Navegação</h4>
+
+          <button type="button" (click)="irParaSecao('inicio')">
+            Início
+          </button>
+
+          <button type="button" (click)="irParaSecao('catalogo')">
+            Catálogo
+          </button>
+
+          <button type="button" (click)="irParaSecao('sobre')">
+            Sobre
+          </button>
+        </div>
+
+        <div class="footer-column">
+          <h4>Atendimento</h4>
+
+          <span>ajuda@egarrafas.com.br</span>
+          <span>(63) 99999-9999</span>
+          <span>Seg a Sex • 08h às 18h</span>
+        </div>
+
+        <div class="footer-column">
+          <h4>Informações</h4>
+
+          <span>Compra segura</span>
+          <span>Entrega para todo o Brasil</span>
+          <span>Produtos térmicos de alta qualidade</span>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 E-Garrafas. Todos os direitos reservados.</span>
+      </div>
+    </footer>
+
+  </div>
+</div>

@@ -1,0 +1,255 @@
+<div class="produto-admin-page">
+
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">ADMINISTRAÇÃO</span>
+
+      <h1>Controle de produtos</h1>
+
+      <p>
+        Listagem e manutenção dos produtos exibidos no catálogo do cliente.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="secondary-button" (click)="voltarDashboard()">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </button>
+
+      <button type="button" class="secondary-button" (click)="abrirCatalogo()">
+        <mat-icon>storefront</mat-icon>
+        <span>Catálogo</span>
+      </button>
+
+      <button type="button" class="primary-button" (click)="novoProduto()">
+        <mat-icon>add</mat-icon>
+        <span>Novo produto</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="summary-grid">
+    <article class="summary-card primary">
+      <span>Produtos</span>
+      <strong>{{ totalProdutos() }}</strong>
+    </article>
+
+    <article class="summary-card">
+      <span>Estoque</span>
+      <strong>{{ estoqueTotal() }}</strong>
+    </article>
+
+    <article class="summary-card">
+      <span>Valor em estoque</span>
+      <strong>{{ formatarPreco(valorEmEstoque()) }}</strong>
+    </article>
+
+    <article class="summary-card warning">
+      <span>Sem estoque</span>
+      <strong>{{ produtosSemEstoque() }}</strong>
+    </article>
+  </section>
+
+  <section class="list-panel">
+    <div class="list-toolbar">
+      <div>
+        <span class="eyebrow">LISTAGEM</span>
+        <h2>Produtos cadastrados</h2>
+      </div>
+
+      <div class="toolbar-actions">
+        <label class="search-box">
+          <mat-icon>search</mat-icon>
+
+          <input
+            type="text"
+            placeholder="Buscar produto..."
+            [(ngModel)]="termoBusca"
+            (input)="aplicarFiltro()">
+
+          <button
+            type="button"
+            *ngIf="termoBusca"
+            class="clear-button"
+            (click)="limparBusca()"
+            title="Limpar busca">
+            <mat-icon>close</mat-icon>
+          </button>
+        </label>
+
+        <button type="button" class="refresh-button" (click)="carregarProdutos()">
+          <mat-icon>refresh</mat-icon>
+          <span>Atualizar</span>
+        </button>
+      </div>
+    </div>
+
+    <section class="state-card" *ngIf="carregando">
+      <mat-icon>hourglass_top</mat-icon>
+      <h3>Carregando produtos...</h3>
+      <p>Aguarde enquanto buscamos os registros cadastrados.</p>
+    </section>
+
+    <section class="state-card error" *ngIf="!carregando && erro">
+      <mat-icon>sync_problem</mat-icon>
+      <h3>Não foi possível carregar</h3>
+      <p>{{ erro }}</p>
+
+      <button type="button" class="primary-button" (click)="carregarProdutos()">
+        Tentar novamente
+      </button>
+    </section>
+
+    <section class="state-card" *ngIf="!carregando && !erro && produtosFiltrados.length === 0">
+      <mat-icon>inventory_2</mat-icon>
+      <h3>Nenhum produto encontrado</h3>
+      <p>Cadastre um novo produto ou altere a pesquisa.</p>
+
+      <button type="button" class="primary-button" (click)="novoProduto()">
+        Cadastrar produto
+      </button>
+    </section>
+
+    <div class="table-area" *ngIf="!carregando && !erro && produtosFiltrados.length > 0">
+      <div class="table-wrapper">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Marca / Modelo</th>
+              <th>Capacidade</th>
+              <th>Estoque</th>
+              <th>Preço</th>
+              <th>Status</th>
+              <th class="actions-column">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let produto of produtosPaginados(); trackBy: trackByProduto">
+              <td>
+                <div class="product-cell">
+                  <div class="product-image" [class.no-image]="!getImagemProduto(produto)">
+                    <img
+                      *ngIf="getImagemProduto(produto)"
+                      [src]="getImagemProduto(produto)"
+                      [alt]="produto.nome">
+
+                    <mat-icon *ngIf="!getImagemProduto(produto)">water_bottle</mat-icon>
+                  </div>
+
+                  <div class="product-main-info">
+                    <strong>{{ produto.nome }}</strong>
+                    <span>{{ nomeMaterial(produto) }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div class="stacked-info">
+                  <strong>{{ nomeMarca(produto) }}</strong>
+                  <span>{{ nomeModelo(produto) }}</span>
+                </div>
+              </td>
+
+              <td>
+                <span class="pill">{{ capacidadeProduto(produto) }}</span>
+              </td>
+
+              <td>
+                <strong>{{ produto.estoque || 0 }}</strong>
+              </td>
+
+              <td>
+                <strong class="price">{{ formatarPreco(produto.preco) }}</strong>
+              </td>
+
+              <td>
+                <span
+                  class="status-pill"
+                  [class.success]="classeStatusEstoque(produto) === 'success'"
+                  [class.warning]="classeStatusEstoque(produto) === 'warning'"
+                  [class.danger]="classeStatusEstoque(produto) === 'danger'">
+                  {{ statusEstoque(produto) }}
+                </span>
+              </td>
+
+              <td class="actions-column">
+                <div class="row-actions">
+                  <button
+                    type="button"
+                    class="icon-button edit"
+                    title="Editar produto"
+                    (click)="editarProduto(produto)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="icon-button delete"
+                    title="Excluir produto"
+                    (click)="excluirProduto(produto)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="pagination-bar">
+        <div class="pagination-info">
+          Exibindo
+          <strong>{{ primeiroItemPagina() }}</strong>
+          -
+          <strong>{{ ultimoItemPagina() }}</strong>
+          de
+          <strong>{{ produtosFiltrados.length }}</strong>
+          produto(s)
+        </div>
+
+        <div class="page-size">
+          <span>Itens por página</span>
+
+          <select
+            [ngModel]="itensPorPagina"
+            (ngModelChange)="alterarItensPorPagina($event)">
+            <option *ngFor="let opcao of opcoesItensPorPagina" [ngValue]="opcao">
+              {{ opcao }}
+            </option>
+          </select>
+        </div>
+
+        <div class="pagination-actions">
+          <button
+            type="button"
+            class="page-button"
+            [disabled]="paginaAtual === 1"
+            (click)="paginaAnterior()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <button
+            type="button"
+            class="page-number"
+            *ngFor="let pagina of paginasVisiveis()"
+            [class.active]="paginaAtual === pagina"
+            (click)="irParaPagina(pagina)">
+            {{ pagina }}
+          </button>
+
+          <button
+            type="button"
+            class="page-button"
+            [disabled]="paginaAtual === totalPaginas()"
+            (click)="proximaPagina()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+</div>

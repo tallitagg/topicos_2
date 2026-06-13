@@ -1,36 +1,41 @@
 import { Routes } from '@angular/router';
 
-import { ModeloList } from './components/modelo/modelo-list/modelo-list';
-import { ModeloForm } from './components/modelo/modelo-form/modelo-form';
+import { adminGuard, adminChildGuard } from './guards/admin.guard';
+import { clienteGuard } from './guards/cliente.guard';
+
+import { HomeComponent } from './components/administrador/home/home.component/home.component';
+
+import { ModeloList } from './components/administrador/modelo/modelo-list/modelo-list';
+import { ModeloForm } from './components/administrador/modelo/modelo-form/modelo-form';
 import { modeloResolver } from './resolvers/modelo.resolver';
 
-import { MarcaList } from './components/marca/marca-list/marca-list';
-import { MarcaForm } from './components/marca/marca-form/marca-form';
+import { MarcaList } from './components/administrador/marca/marca-list/marca-list';
+import { MarcaForm } from './components/administrador/marca/marca-form/marca-form';
 import { marcaResolver } from './resolvers/marca.resolver';
 
-import { MaterialList } from './components/material/material-list/material-list';
-import { MaterialForm } from './components/material/material-form/material-form';
+import { MaterialList } from './components/administrador/material/material-list/material-list';
+import { MaterialForm } from './components/administrador/material/material-form/material-form';
 import { materialResolver } from './resolvers/material.resolver';
 
-import { CorList } from './components/cor/cor-list/cor-list';
-import { CorForm } from './components/cor/cor-form/cor-form';
+import { CorList } from './components/administrador/cor/cor-list/cor-list';
+import { CorForm } from './components/administrador/cor/cor-form/cor-form';
 import { corResolver } from './resolvers/cor.resolver';
 
-import { ProdutoList } from './components/produto/produto-list/produto-list';
-import { ProdutoForm } from './components/produto/produto-form/produto-form';
+import { ProdutoList } from './components/administrador/produto/produto-list/produto-list';
+import { ProdutoForm } from './components/administrador/produto/produto-form/produto-form';
 import { produtoResolver } from './resolvers/produto.resolver';
 
 import { LoginComponent } from './components/login/login';
 import { CadastroComponent } from './components/cadastro/cadastro';
 import { RecuperarSenhaComponent } from './components/recuperar-senha/recuperar-senha';
 
-import { CatalogoComponent } from './components/catalogo/catalogo';
-import { CarrinhoComponent } from './components/carrinho/carrinho';
-import { ListaDesejosComponent } from './components/lista-desejos/lista-desejos';
-import { FinalizarCompraComponent } from './components/finalizar-compra/finalizar-compra';
-import { ResumoCompraComponent } from './components/resumo-compra/resumo-compra';
-import { ProdutoDetalheComponent } from './components/produto-detalhe/produto-detalhe';
-import { PerfilUsuarioComponent } from './components/perfil-usuario/perfil-usuario';
+import { CatalogoComponent } from './components/usuario/catalogo/catalogo';
+import { CarrinhoComponent } from './components/usuario/carrinho/carrinho';
+import { ListaDesejosComponent } from './components/usuario/lista-desejos/lista-desejos';
+import { FinalizarCompraComponent } from './components/usuario/finalizar-compra/finalizar-compra';
+import { ResumoCompraComponent } from './components/usuario/resumo-compra/resumo-compra';
+import { ProdutoDetalheComponent } from './components/usuario/produto-detalhe/produto-detalhe';
+import { PerfilUsuarioComponent } from './components/usuario/perfil-usuario/perfil-usuario';
 
 export const routes: Routes = [
   {
@@ -41,7 +46,8 @@ export const routes: Routes = [
 
   {
     path: 'home',
-    component: CatalogoComponent
+    redirectTo: 'catalogo',
+    pathMatch: 'full'
   },
 
   {
@@ -56,32 +62,38 @@ export const routes: Routes = [
 
   {
     path: 'detalhe-produto/:id',
-    component: ProdutoDetalheComponent
+    redirectTo: 'produto/:id',
+    pathMatch: 'full'
   },
 
   {
     path: 'carrinho',
-    component: CarrinhoComponent
+    component: CarrinhoComponent,
+    canActivate: [clienteGuard]
   },
 
   {
     path: 'desejos',
-    component: ListaDesejosComponent
+    component: ListaDesejosComponent,
+    canActivate: [clienteGuard]
   },
 
   {
     path: 'perfil',
-    component: PerfilUsuarioComponent
+    component: PerfilUsuarioComponent,
+    canActivate: [clienteGuard]
   },
 
   {
     path: 'finalizar-compra',
-    component: FinalizarCompraComponent
+    component: FinalizarCompraComponent,
+    canActivate: [clienteGuard]
   },
 
   {
     path: 'resumo-compra',
-    component: ResumoCompraComponent
+    component: ResumoCompraComponent,
+    canActivate: [clienteGuard]
   },
 
   {
@@ -100,107 +112,219 @@ export const routes: Routes = [
   },
 
   {
-    path: 'marcas',
+    path: 'admin',
+    canActivate: [adminGuard],
+    canActivateChild: [adminChildGuard],
     children: [
       {
         path: '',
-        component: MarcaList
+        component: HomeComponent
       },
+
       {
-        path: 'new',
-        component: MarcaForm
+        path: 'dashboard',
+        component: HomeComponent
       },
+
       {
-        path: 'edit/:id',
-        component: MarcaForm,
-        resolve: {
-          marca: marcaResolver
-        }
+        path: 'marcas',
+        children: [
+          {
+            path: '',
+            component: MarcaList
+          },
+          {
+            path: 'new',
+            component: MarcaForm
+          },
+          {
+            path: 'edit/:id',
+            component: MarcaForm,
+            resolve: {
+              marca: marcaResolver
+            }
+          }
+        ]
+      },
+
+      {
+        path: 'modelos',
+        children: [
+          {
+            path: '',
+            component: ModeloList
+          },
+          {
+            path: 'new',
+            component: ModeloForm
+          },
+          {
+            path: 'edit/:id',
+            component: ModeloForm,
+            resolve: {
+              modelo: modeloResolver
+            }
+          }
+        ]
+      },
+
+      {
+        path: 'materiais',
+        children: [
+          {
+            path: '',
+            component: MaterialList
+          },
+          {
+            path: 'new',
+            component: MaterialForm
+          },
+          {
+            path: 'edit/:id',
+            component: MaterialForm,
+            resolve: {
+              material: materialResolver
+            }
+          }
+        ]
+      },
+
+      {
+        path: 'cores',
+        children: [
+          {
+            path: '',
+            component: CorList
+          },
+          {
+            path: 'new',
+            component: CorForm
+          },
+          {
+            path: 'edit/:id',
+            component: CorForm,
+            resolve: {
+              cor: corResolver
+            }
+          }
+        ]
+      },
+
+      {
+        path: 'produtos',
+        children: [
+          {
+            path: '',
+            component: ProdutoList
+          },
+          {
+            path: 'new',
+            component: ProdutoForm
+          },
+          {
+            path: 'edit/:id',
+            component: ProdutoForm,
+            resolve: {
+              produto: produtoResolver
+            }
+          }
+        ]
       }
     ]
+  },
+
+  {
+    path: 'marcas',
+    redirectTo: 'admin/marcas',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'marcas/new',
+    redirectTo: 'admin/marcas/new',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'marcas/edit/:id',
+    redirectTo: 'admin/marcas/edit/:id',
+    pathMatch: 'full'
   },
 
   {
     path: 'modelos',
-    children: [
-      {
-        path: '',
-        component: ModeloList
-      },
-      {
-        path: 'new',
-        component: ModeloForm
-      },
-      {
-        path: 'edit/:id',
-        component: ModeloForm,
-        resolve: {
-          modelo: modeloResolver
-        }
-      }
-    ]
+    redirectTo: 'admin/modelos',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'modelos/new',
+    redirectTo: 'admin/modelos/new',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'modelos/edit/:id',
+    redirectTo: 'admin/modelos/edit/:id',
+    pathMatch: 'full'
   },
 
   {
     path: 'materiais',
-    children: [
-      {
-        path: '',
-        component: MaterialList
-      },
-      {
-        path: 'new',
-        component: MaterialForm
-      },
-      {
-        path: 'edit/:id',
-        component: MaterialForm,
-        resolve: {
-          material: materialResolver
-        }
-      }
-    ]
+    redirectTo: 'admin/materiais',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'materiais/new',
+    redirectTo: 'admin/materiais/new',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'materiais/edit/:id',
+    redirectTo: 'admin/materiais/edit/:id',
+    pathMatch: 'full'
   },
 
   {
     path: 'cores',
-    children: [
-      {
-        path: '',
-        component: CorList
-      },
-      {
-        path: 'new',
-        component: CorForm
-      },
-      {
-        path: 'edit/:id',
-        component: CorForm,
-        resolve: {
-          cor: corResolver
-        }
-      }
-    ]
+    redirectTo: 'admin/cores',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'cores/new',
+    redirectTo: 'admin/cores/new',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'cores/edit/:id',
+    redirectTo: 'admin/cores/edit/:id',
+    pathMatch: 'full'
   },
 
   {
     path: 'produtos',
-    children: [
-      {
-        path: '',
-        component: ProdutoList
-      },
-      {
-        path: 'new',
-        component: ProdutoForm
-      },
-      {
-        path: 'edit/:id',
-        component: ProdutoForm,
-        resolve: {
-          produto: produtoResolver
-        }
-      }
-    ]
+    redirectTo: 'admin/produtos',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'produtos/new',
+    redirectTo: 'admin/produtos/new',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'produtos/edit/:id',
+    redirectTo: 'admin/produtos/edit/:id',
+    pathMatch: 'full'
+  },
+
+  {
+    path: '**',
+    redirectTo: 'catalogo'
   }
 ];

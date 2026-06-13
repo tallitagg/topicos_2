@@ -6,12 +6,6 @@ import { EcommerceAuthService } from './ecommerce-auth.service';
   providedIn: 'root'
 })
 export class ListaDesejosService {
-  adicionar(produto: Produto) {
-    throw new Error('Method not implemented.');
-  }
-  existe(id: number): boolean {
-    throw new Error('Method not implemented.');
-  }
 
   constructor(private authService: EcommerceAuthService) {}
 
@@ -19,29 +13,51 @@ export class ListaDesejosService {
     return JSON.parse(localStorage.getItem(this.key()) || '[]');
   }
 
-  alternar(produto: Produto): void {
+  adicionar(produto: Produto): void {
+    if (!produto || produto.id === undefined || produto.id === null) {
+      return;
+    }
+
     const produtos = this.listar();
+    const jaExiste = produtos.some(item => item.id === produto.id);
 
-    const existe = produtos.some(item => item.id === produto.id);
+    if (!jaExiste) {
+      localStorage.setItem(this.key(), JSON.stringify([...produtos, produto]));
+    }
+  }
 
-    const atualizados = existe
-      ? produtos.filter(item => item.id !== produto.id)
-      : [...produtos, produto];
+  alternar(produto: Produto): void {
+    if (!produto || produto.id === undefined || produto.id === null) {
+      return;
+    }
 
-    localStorage.setItem(this.key(), JSON.stringify(atualizados));
+    if (this.existe(produto.id)) {
+      this.remover(produto.id);
+      return;
+    }
+
+    this.adicionar(produto);
   }
 
   remover(produtoId: number | undefined): void {
-    if (!produtoId) return;
+    if (!produtoId) {
+      return;
+    }
 
     const produtos = this.listar().filter(item => item.id !== produtoId);
     localStorage.setItem(this.key(), JSON.stringify(produtos));
   }
 
-  contem(produtoId?: number): boolean {
-    if (!produtoId) return false;
+  existe(produtoId?: number): boolean {
+    if (!produtoId) {
+      return false;
+    }
 
     return this.listar().some(item => item.id === produtoId);
+  }
+
+  contem(produtoId?: number): boolean {
+    return this.existe(produtoId);
   }
 
   quantidadeTotal(): number {
@@ -53,7 +69,7 @@ export class ListaDesejosService {
   }
 
   private key(): string {
-    const username = this.authService.getUsernameLogado();
+    const username = this.authService.getUsernameLogado() || 'visitante';
     return `listaDesejos_${username}`;
   }
 }

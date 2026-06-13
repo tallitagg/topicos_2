@@ -28,6 +28,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Usuário</mat-label>
+
           <input
             matInput
             formControlName="username"
@@ -36,14 +37,11 @@
           <mat-error *ngIf="form.get('username')?.hasError('required') && form.get('username')?.touched">
             O nome de usuário é obrigatório.
           </mat-error>
-
-          <mat-error *ngIf="form.get('username')?.hasError('username') && form.get('username')?.touched">
-            Informe um nome de usuário válido.
-          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Senha</mat-label>
+
           <input
             matInput
             [type]="ocultarSenha ? 'password' : 'text'"
@@ -68,13 +66,15 @@
           mat-raised-button
           type="button"
           class="login-button"
+          [disabled]="carregando"
           (click)="entrar()">
-          Entrar
+
+          {{ carregando ? 'Entrando...' : 'Entrar' }}
         </button>
 
         <div class="links">
           <a routerLink="/recuperar-senha">Esqueci minha senha</a>
-          <a routerLink="/login">Criar conta</a>
+          <a routerLink="/cadastro">Criar conta</a>
         </div>
 
       </form>

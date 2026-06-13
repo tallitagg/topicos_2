@@ -2,7 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { Produto } from '../models/produto';
+import { ArquivoProduto, Produto } from '../models/produto';
+
+type ProdutoComArquivos = Produto & {
+  arquivos?: ArquivoProduto[];
+  imagem?: ArquivoProduto;
+};
 
 @Injectable({
   providedIn: 'root'
@@ -54,22 +59,42 @@ export class ProdutoService {
   }
 
   removerImagem(fid: string): Observable<void> {
-    return this.httpClient.delete<void>(`${this.api}/image/${fid}`);
+    return this.httpClient.delete<void>(`${this.api}/image/${encodeURIComponent(fid)}`);
   }
 
   urlImagem(fid: string): string {
-    return `${this.api}/image/download/${fid}`;
+    return `${this.api}/image/download/${encodeURIComponent(fid)}`;
   }
 
-  imagemPrincipal(produto: Produto): string {
-    if (produto.imagens && produto.imagens.length > 0 && produto.imagens[0].fid) {
-      return this.urlImagem(produto.imagens[0].fid);
+  fidImagemPrincipal(produto: Produto | null | undefined): string | null {
+    if (!produto) {
+      return null;
     }
 
-    if (produto.imagemUrl) {
-      return produto.imagemUrl;
+    const produtoComArquivos = produto as ProdutoComArquivos;
+
+    if (produtoComArquivos.imagens?.length && produtoComArquivos.imagens[0]?.fid) {
+      return produtoComArquivos.imagens[0].fid;
     }
 
-    return 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=900&q=80';
+    if (produtoComArquivos.arquivos?.length && produtoComArquivos.arquivos[0]?.fid) {
+      return produtoComArquivos.arquivos[0].fid;
+    }
+
+    if (produtoComArquivos.imagem?.fid) {
+      return produtoComArquivos.imagem.fid;
+    }
+
+    return null;
+  }
+
+  imagemPrincipal(produto: Produto | null | undefined): string {
+    const fid = this.fidImagemPrincipal(produto);
+
+    if (fid) {
+      return this.urlImagem(fid);
+    }
+
+    return produto?.imagemUrl || '';
   }
 }
